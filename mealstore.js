@@ -26,6 +26,7 @@ const K = {
   history: 'mealPlanHistory',
   eaten: 'eatenMealsIds',       // نفس الاسم القديم عشان باقي الشاشات
   eatenDate: 'eatenMealsDate',
+  extras: 'extraMealsToday',    // "أكلت حاجة تانية" (بيتصفّر كل يوم)
 };
 
 export const todayKey = () => {
@@ -118,20 +119,94 @@ export const getEatenToday = async () => {
   const today = todayKey();
   const savedDate = await AsyncStorage.getItem(K.eatenDate);
   if (savedDate !== today) {
-    await AsyncStorage.multiSet([[K.eatenDate, today], [K.eaten, '[]']]);
-    await saveTotals([]);
+    await AsyncStorage.multiSet([[K.eatenDate, today], [K.eaten, '[]'], [K.extras, '[]']]);
+    await saveTotals([], []);
     return [];
   }
   const raw = await AsyncStorage.getItem(K.eaten);
   return raw ? JSON.parse(raw) : [];
 };
 
-const saveTotals = async (ids) => {
-  const t = getTotals(ids);
+// ---------------- "أكلت حاجة تانية" ----------------
+// الخطة اقتراح مش أمر: اللي ياكل حاجة برا الخطة يسجّلها هنا وتتحسب في سعرات اليوم
+// الأرقام تقريبية، الهدف إن اليوزر يفضل متابع مش إنه يبقى دقيق 100%
+export const QUICK_EXTRAS = [
+  { key: 'home_light', name: tr('أكلة بيتي خفيفة'), icon: 'leaf-outline', cal: 400, pro: 20, carbs: 40, fat: 15 },
+  { key: 'home_mid', name: tr('أكلة بيتي متوسطة'), icon: 'restaurant-outline', cal: 650, pro: 30, carbs: 70, fat: 25 },
+  { key: 'home_heavy', name: tr('أكلة بيتي تقيلة'), icon: 'pizza-outline', cal: 900, pro: 40, carbs: 100, fat: 35 },
+  { key: 'fast_food', name: tr('أكل برا / فاست فود'), icon: 'fast-food-outline', cal: 1000, pro: 35, carbs: 100, fat: 50 },
+  { key: 'sweet', name: tr('حلو أو سناك'), icon: 'ice-cream-outline', cal: 250, pro: 4, carbs: 35, fat: 10 },
+];
+
+const ZERO = { cal: 0, pro: 0, carbs: 0, fat: 0 };
+const sumExtras = (extras = []) =>
+  extras.reduce(
+    (t, e) => ({ cal: t.cal + (e.cal || 0), pro: t.pro + (e.pro || 0), carbs: t.carbs + (e.carbs || 0), fat: t.fat + (e.fat || 0) }),
+    ZERO
+  );
+
+// إجمالي اليوم = وجبات الخطة اللي اتاكلت + الحاجات التانية
+export const getDayTotals = (ids, extras = []) => {
+  const a = getTotals(ids);
+  const b = sumExtras(extras);
+  return { cal: a.cal + b.cal, pro: a.pro + b.pro, carbs: a.carbs + b.carbs, fat: a.fat + b.fat };
+};
+
+export const getExtrasToday = async () => {
+  await getEatenToday(); // بيصفّر لو يوم جديد
+  const raw = await AsyncStorage.getItem(K.extras);
+  return raw ? JSON.parse(raw) : [];
+};
+
+const saveTotals = async (ids, extras) => {
+  const list = extras || (await getExtrasToday());
+  const t = getDayTotals(ids, list);
   await AsyncStorage.multiSet([
     ['totalCaloriesEaten', String(t.cal)],
     ['totalProteinEaten', String(t.pro)],
   ]);
+};
+
+// بادچ "أكل نضيف" = يوم وصلت فيه لـ90% من هدف البروتين (من الخطة أو من برّاها)
+const updateProteinDay = async (ids, extras) => {
+  try {
+    const targets = await getTargets();
+    const t = getDayTotals(ids, extras);
+    await markPerfectMealDay(t.pro >= targets.pro * 0.9);
+  } catch (e) {}
+};
+
+// cal إجباري، والبروتين لو مكتبوش بنقدّره (15% من السعرات)
+export const addExtraMeal = async ({ name, cal, pro, carbs, fat }) => {
+  const c = Math.max(0, Math.round(Number(cal) || 0));
+  if (!c) return null;
+  const p = pro !== undefined && pro !== null && pro !== '' ? Math.round(Number(pro) || 0) : Math.round((c * 0.15) / 4);
+  const ids = await getEatenToday();
+  const extras = await getExtrasToday();
+  const next = [
+    ...extras,
+    {
+      id: String(Date.now()),
+      name: name || tr('أكلة من برا الخطة'),
+      cal: c,
+      pro: p,
+      carbs: carbs ?? Math.round((c * 0.5) / 4),
+      fat: fat ?? Math.round((c * 0.3) / 9),
+    },
+  ];
+  await AsyncStorage.setItem(K.extras, JSON.stringify(next));
+  await saveTotals(ids, next);
+  await updateProteinDay(ids, next);
+  return next;
+};
+
+export const removeExtraMeal = async (extraId) => {
+  const ids = await getEatenToday();
+  const next = (await getExtrasToday()).filter((e) => e.id !== extraId);
+  await AsyncStorage.setItem(K.extras, JSON.stringify(next));
+  await saveTotals(ids, next);
+  await updateProteinDay(ids, next);
+  return next;
 };
 
 export const setEatenToday = async (ids) => {
@@ -143,12 +218,7 @@ export const toggleEaten = async (mealId) => {
   const ids = await getEatenToday();
   const next = ids.includes(mealId) ? ids.filter((id) => id !== mealId) : [...ids, mealId];
   await setEatenToday(next);
-  // يوم "أكل نضيف" = كل وجبات خطة النهارده اتاكلت (للبادچ)
-  try {
-    const raw = await AsyncStorage.getItem(K.plan);
-    const plan = raw ? JSON.parse(raw) : null;
-    if (plan && plan.ids) await markPerfectMealDay(Object.values(plan.ids).every((id) => next.includes(id)));
-  } catch (e) {}
+  await updateProteinDay(next, await getExtrasToday());
   return next;
 };
 

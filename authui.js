@@ -3,7 +3,7 @@
 // =========================================================
 import React, { useEffect, useState } from 'react';
 import { tc } from './theme';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Dimensions, ActivityIndicator, Alert, Platform } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Dimensions, ActivityIndicator, Alert, Platform, Image } from 'react-native';
 import { Ionicons, FontAwesome5 } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { CommonActions } from '@react-navigation/native';
@@ -15,6 +15,12 @@ const BG_COLOR = tc('#000000', 'bg');
 const INPUT_BG = tc('#1A1A1A', 'bg');
 const TEXT_COLOR = tc('#FFFFFF', 'fg');
 const PLACEHOLDER_COLOR = tc('#666666', 'fg');
+
+// لوجو جوجل الرسمي بألوانه، وفيسبوك زرار أزرق والـf أبيض. Apple بتفضل أيقونة لون واحد
+const SOCIAL_LOGOS = {
+  google: require('./assets/social/google.png'),
+};
+const FB_BLUE = '#1877F2';
 
 export const AuthInput = ({ placeholder, icon, value, onChangeText, secure, focused, onFocus, onBlur, keyboardType, autoCapitalize = 'none', textContentType, onSubmitEditing, returnKeyType }) => {
   const [show, setShow] = useState(false);
@@ -90,8 +96,18 @@ export const SocialRow = ({ navigation, busy, setBusy }) => {
   };
 
   const Btn = ({ k, icon, fn }) => (
-    <TouchableOpacity style={styles.socialIcon} onPress={() => run(k, fn)} disabled={!!busy}>
-      {busy === k ? <ActivityIndicator color={tc("#FFF", 'fg')} /> : <FontAwesome5 name={icon} size={22} color={tc("#FFF", 'fg')} />}
+    <TouchableOpacity
+      style={[styles.socialIcon, k === 'facebook' && { backgroundColor: FB_BLUE, borderColor: FB_BLUE }]}
+      onPress={() => run(k, fn)}
+      disabled={!!busy}
+    >
+      {busy === k ? (
+        <ActivityIndicator color={k === 'facebook' ? '#FFF' : tc("#FFF", 'fg')} />
+      ) : SOCIAL_LOGOS[k] ? (
+        <Image source={SOCIAL_LOGOS[k]} style={{ width: 24, height: 24 }} resizeMode="contain" />
+      ) : (
+        <FontAwesome5 name={icon} size={k === 'facebook' ? 25 : 22} color={k === 'facebook' ? '#FFF' : tc("#FFF", 'fg')} />
+      )}
     </TouchableOpacity>
   );
 

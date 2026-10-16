@@ -39,7 +39,7 @@ export const BADGES = [
     check: (s) => s.weightEntries >= 4, progress: (s) => Math.min(s.weightEntries / 4, 1) },
   { id: 'hydrated', title: tr('مية مية'), desc: tr('حقق هدف المية 5 أيام'), icon: 'water', color: tc('#3498DB', 'fg'),
     check: (s) => s.waterGoalDays >= 5, progress: (s) => Math.min(s.waterGoalDays / 5, 1) },
-  { id: 'clean_eater', title: tr('أكل نضيف'), desc: tr('كُل الـ4 وجبات في 3 أيام'), icon: 'nutrition', color: tc('#55EFC4', 'fg'),
+  { id: 'clean_eater', title: tr('أكل نضيف'), desc: tr('حقق هدف البروتين 3 أيام'), icon: 'nutrition', color: tc('#55EFC4', 'fg'),
     check: (s) => s.perfectMealDays >= 3, progress: (s) => Math.min(s.perfectMealDays / 3, 1) },
 ];
 
