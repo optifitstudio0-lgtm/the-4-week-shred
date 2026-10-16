@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react'; // 1. ضيفنا use
 import { 
   View, Text, StyleSheet, Image, ScrollView, TouchableOpacity, Dimensions, Animated, Easing // 2. ضيفنا Animated و Easing
 } from 'react-native';
+import { tc, statusStyle } from './theme';
 import { StatusBar } from 'expo-status-bar';
 import { Ionicons } from '@expo/vector-icons';
 import MealImage from './mealimage';
@@ -11,7 +12,7 @@ import { unlockSwap } from './ads';
 import { tr } from './i18n';
 
 const { width } = Dimensions.get('window');
-const MAIN_COLOR = '#2ECC71';
+const MAIN_COLOR = tc('#2ECC71', 'fg');
 
 const MealDetailScreen = ({ route, navigation }) => {
   const [meal, setMeal] = useState(route.params.meal);
@@ -71,19 +72,19 @@ const MealDetailScreen = ({ route, navigation }) => {
 
   return (
     <View style={styles.container}>
-      <StatusBar style="light" />
+      <StatusBar style={statusStyle()} />
       
       {/* Header Bar */}
       <View style={styles.headerBar}>
         <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
-          <Ionicons name={ICON.back} size={28} color="#FFF" />
+          <Ionicons name={ICON.back} size={28} color={tc("#FFF", 'fg')} />
         </TouchableOpacity>
         
         <Text style={styles.headerTitle}>{tr('تفاصيل الوجبة')}</Text>
 
         {/* 4. استبدلنا الفراغ بزر التبديل (Swap Button) */}
         <TouchableOpacity onPress={handleSwapMeal} disabled={isEaten}>
-            <Ionicons name="swap-horizontal" size={28} color={isEaten ? '#444' : MAIN_COLOR} />
+            <Ionicons name="swap-horizontal" size={28} color={isEaten ? tc('#444', 'fg') : MAIN_COLOR} />
         </TouchableOpacity>
       </View>
 
@@ -110,22 +111,22 @@ const MealDetailScreen = ({ route, navigation }) => {
           
           <View style={styles.macrosContainer}>
             <View style={styles.macroBox}>
-              <Ionicons name="flame" size={24} color="#E74C3C" />
+              <Ionicons name="flame" size={24} color={tc("#E74C3C", 'fg')} />
               <Text style={styles.macroValue}>{meal.cal}</Text>
               <Text style={styles.macroLabel}>{tr('سعر')}</Text>
             </View>
             <View style={styles.macroBox}>
-              <Ionicons name="nutrition" size={24} color="#3498DB" />
+              <Ionicons name="nutrition" size={24} color={tc("#3498DB", 'fg')} />
               <Text style={styles.macroValue}>{meal.pro}{tr(' جم')}</Text>
               <Text style={styles.macroLabel}>{tr('بروتين')}</Text>
             </View>
             <View style={styles.macroBox}>
-              <Ionicons name="leaf" size={24} color="#F1C40F" />
+              <Ionicons name="leaf" size={24} color={tc("#F1C40F", 'fg')} />
               <Text style={styles.macroValue}>{meal.carbs ?? 0}{tr(' جم')}</Text>
               <Text style={styles.macroLabel}>{tr('كارب')}</Text>
             </View>
             <View style={styles.macroBox}>
-              <Ionicons name="water" size={24} color="#9B59B6" />
+              <Ionicons name="water" size={24} color={tc("#9B59B6", 'fg')} />
               <Text style={styles.macroValue}>{meal.fat ?? 0}{tr(' جم')}</Text>
               <Text style={styles.macroLabel}>{tr('دهون')}</Text>
             </View>
@@ -167,7 +168,7 @@ const MealDetailScreen = ({ route, navigation }) => {
       {/* Footer Button */}
       <View style={styles.floatingFooter}>
         <TouchableOpacity 
-          style={[styles.eatButton, isEaten && { backgroundColor: '#333' }]} 
+          style={[styles.eatButton, isEaten && { backgroundColor: tc('#333', 'bg') }]} 
           onPress={handleEatButton}
         >
           <Text style={styles.eatButtonText}>
@@ -180,7 +181,7 @@ const MealDetailScreen = ({ route, navigation }) => {
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#000' },
+  container: { flex: 1, backgroundColor: tc('#000', 'bg') },
   
   headerBar: {
     marginTop: 50,
@@ -190,7 +191,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 10,
   },
-  headerTitle: { color: '#FFF', fontSize: 18, fontWeight: 'bold' },
+  headerTitle: { color: tc('#FFF', 'fg'), fontSize: 18, fontWeight: 'bold' },
   backButton: { padding: 5 },
   contentContainer: { flex: 1 },
   
@@ -199,12 +200,12 @@ const styles = StyleSheet.create({
     marginHorizontal: 20,
     marginTop: 10,
     height: 300,            
-    backgroundColor: '#FFF', 
+    backgroundColor: tc('#FFF', 'bg'), 
     borderRadius: 30,       
     justifyContent: 'center',
     alignItems: 'center',
     padding: 20,            
-    shadowColor: "#FFF",
+    shadowColor: tc("#FFF", 'shadow'),
     shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 0.1,
     shadowRadius: 10,
@@ -217,33 +218,33 @@ const styles = StyleSheet.create({
 
   textWrapper: { padding: 20 },
   mealType: { color: MAIN_COLOR, fontSize: 14, fontWeight: 'bold', textTransform: 'uppercase', marginBottom: 10, alignSelf: 'center' },
-  mealName: { color: '#FFF', fontSize: 26, fontWeight: 'bold', textAlign: 'center', marginBottom: 25 },
+  mealName: { color: tc('#FFF', 'fg'), fontSize: 26, fontWeight: 'bold', textAlign: 'center', marginBottom: 25 },
   
   macrosContainer: { 
     flexDirection: 'row', 
     justifyContent: 'space-between', 
-    backgroundColor: '#111',
+    backgroundColor: tc('#111', 'bg'),
     padding: 15,
     borderRadius: 20,
     borderWidth: 1,
-    borderColor: '#222'
+    borderColor: tc('#222', 'border')
   },
   macroBox: { alignItems: 'center', flex: 1 },
-  macroValue: { color: '#FFF', fontSize: 16, fontWeight: 'bold', marginTop: 8 },
-  macroLabel: { color: '#666', fontSize: 12, marginTop: 2 },
+  macroValue: { color: tc('#FFF', 'fg'), fontSize: 16, fontWeight: 'bold', marginTop: 8 },
+  macroLabel: { color: tc('#666', 'fg'), fontSize: 12, marginTop: 2 },
   
-  divider: { height: 1, backgroundColor: '#222', marginVertical: 30 },
+  divider: { height: 1, backgroundColor: tc('#222', 'bg'), marginVertical: 30 },
   
-  sectionTitle: { color: '#FFF', fontSize: 20, fontWeight: 'bold', marginBottom: 20 },
+  sectionTitle: { color: tc('#FFF', 'fg'), fontSize: 20, fontWeight: 'bold', marginBottom: 20 },
   ingredientsList: { marginBottom: 30 },
   ingredientItem: { flexDirection: 'row', alignItems: 'flex-start', marginBottom: 15 },
   bullet: { width: 8, height: 8, borderRadius: 4, backgroundColor: MAIN_COLOR, marginRight: 15, marginTop: 8 },
-  ingredientText: { flex: 1, color: '#DDD', fontSize: 16, lineHeight: 24, textAlign: 'left' },
-  instructions: { color: '#BBB', fontSize: 16, lineHeight: 26 },
+  ingredientText: { flex: 1, color: tc('#DDD', 'fg'), fontSize: 16, lineHeight: 24, textAlign: 'left' },
+  instructions: { color: tc('#BBB', 'fg'), fontSize: 16, lineHeight: 26 },
   stepRow: { flexDirection: 'row', alignItems: 'flex-start', marginBottom: 16 },
   stepNum: { width: 28, height: 28, borderRadius: 14, backgroundColor: MAIN_COLOR, justifyContent: 'center', alignItems: 'center', marginRight: 12, marginTop: 1 },
-  stepNumText: { color: '#000', fontWeight: 'bold', fontSize: 14 },
-  stepText: { flex: 1, color: '#DDD', fontSize: 16, lineHeight: 25, textAlign: 'left' },
+  stepNumText: { color: tc('#000', 'fg'), fontWeight: 'bold', fontSize: 14 },
+  stepText: { flex: 1, color: tc('#DDD', 'fg'), fontSize: 16, lineHeight: 25, textAlign: 'left' },
   
   floatingFooter: { 
     position: 'absolute', 
@@ -263,7 +264,7 @@ const styles = StyleSheet.create({
     shadowRadius: 10,
     elevation: 5,
   },
-  eatButtonText: { color: '#FFF', fontSize: 18, fontWeight: 'bold' },
+  eatButtonText: { color: tc('#FFF', 'fg'), fontSize: 18, fontWeight: 'bold' },
 });
 
 export default MealDetailScreen;

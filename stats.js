@@ -1,4 +1,5 @@
 import React, { useState, useCallback } from 'react';
+import { tc, statusStyle } from './theme';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image, Alert } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { Ionicons } from '@expo/vector-icons';
@@ -16,9 +17,9 @@ import WeightModal from './weightmodal';
 import { tr } from './i18n';
 import { AdBanner } from './ads';
 
-const MAIN_COLOR = '#2ECC71';
-const ACCENT_COLOR_CALORIES = '#E74C3C';
-const ACCENT_COLOR_PROTEIN = '#3498DB';
+const MAIN_COLOR = tc('#2ECC71', 'fg');
+const ACCENT_COLOR_CALORIES = tc('#E74C3C', 'fg');
+const ACCENT_COLOR_PROTEIN = tc('#3498DB', 'fg');
 
 const ProgressBar = ({ label, value, target, color, unit = '' }) => {
   const pct = Math.min((value / (target || 1)) * 100, 100);
@@ -41,7 +42,7 @@ const WeightChart = ({ log, onLongPress }) => {
   if (data.length < 2) {
     return (
       <View style={styles.chartEmpty}>
-        <Ionicons name="stats-chart" size={36} color="#444" />
+        <Ionicons name="stats-chart" size={36} color={tc("#444", 'fg')} />
         <Text style={styles.chartEmptyText}>{tr('سجّل وزنك مرتين على الأقل عشان الرسم يظهر')}</Text>
       </View>
     );
@@ -146,7 +147,7 @@ const StatsScreen = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      <StatusBar style="light" />
+      <StatusBar style={statusStyle()} />
       <View style={styles.header}>
         <Text style={styles.headerTitle}>{tr('تقدمك')}</Text>
       </View>
@@ -155,21 +156,21 @@ const StatsScreen = ({ navigation }) => {
         {/* الستريك والبادچات */}
         <TouchableOpacity style={styles.streakCard} activeOpacity={0.85} onPress={() => navigation.navigate('Achievements')}>
           <View style={styles.streakBig}>
-            <Ionicons name="flame" size={34} color="#FF7A00" />
+            <Ionicons name="flame" size={34} color={tc("#FF7A00", 'fg')} />
             <Text style={styles.streakNum}>{s.streak}</Text>
           </View>
           <View style={{ flex: 1 }}>
             <Text style={styles.streakTitle}>{tr('أيام ستريك')}</Text>
             <Text style={styles.streakSub}>{tr('أحسن ستريك: ')}{s.bestStreak}{tr(' • بادچات: ')}{earnedCount}/{BADGES.length}</Text>
           </View>
-          <Ionicons name={ICON.chevronNext} size={22} color="#666" />
+          <Ionicons name={ICON.chevronNext} size={22} color={tc("#666", 'fg')} />
         </TouchableOpacity>
 
         {/* الوزن */}
         <View style={styles.sectionRow}>
           <Text style={styles.sectionTitle}>{tr('الوزن')}</Text>
           <TouchableOpacity style={styles.updateButton} onPress={() => setModal(true)}>
-            <Ionicons name="add" size={18} color="#000" />
+            <Ionicons name="add" size={18} color={tc("#000", 'fg')} />
             <Text style={styles.updateButtonText}>{tr('سجّل وزنك')}</Text>
           </TouchableOpacity>
         </View>
@@ -185,7 +186,7 @@ const StatsScreen = ({ navigation }) => {
           </View>
           <View style={styles.weightBox}>
             <Text style={styles.weightLabel}>{tr('الفرق')}</Text>
-            <Text style={[styles.weightValue, { color: change < 0 ? MAIN_COLOR : change > 0 ? '#F39C12' : '#FFF' }]}>
+            <Text style={[styles.weightValue, { color: change < 0 ? MAIN_COLOR : change > 0 ? tc('#F39C12', 'fg') : tc('#FFF', 'fg') }]}>
               {change > 0 ? '+' : ''}{change}<Text style={styles.weightUnit}>{tr(' كجم')}</Text>
             </Text>
           </View>
@@ -197,7 +198,7 @@ const StatsScreen = ({ navigation }) => {
         {!!plateau && (
           <View style={styles.plateauCard}>
             <View style={styles.plateauHead}>
-              <View style={styles.plateauIcon}><Ionicons name="search" size={18} color="#000" /></View>
+              <View style={styles.plateauIcon}><Ionicons name="search" size={18} color={tc("#000", 'fg')} /></View>
               <Text style={styles.plateauTitle}>{tr('محقق الثبات')}</Text>
             </View>
             <Text style={styles.plateauLead}>
@@ -239,7 +240,7 @@ const StatsScreen = ({ navigation }) => {
                   <Image source={{ uri: p.uri }} style={styles.photoImg} />
                 ) : (
                   <View style={styles.photoEmpty}>
-                    <Ionicons name="camera-outline" size={28} color="#555" />
+                    <Ionicons name="camera-outline" size={28} color={tc("#555", 'fg')} />
                   </View>
                 )}
                 <Text style={styles.photoTag}>{i === 0 ? tr('قبل') : tr('بعد')}</Text>
@@ -250,7 +251,7 @@ const StatsScreen = ({ navigation }) => {
             <Text style={styles.photosText}>
               {photos.length === 0 ? tr('صوّر صورة "قبل" النهارده، هتشكر نفسك بعد 4 أسابيع') : tr('{0} صورة • قارن وشيّر', photos.length)}
             </Text>
-            <Ionicons name={ICON.chevronNext} size={20} color="#666" />
+            <Ionicons name={ICON.chevronNext} size={20} color={tc("#666", 'fg')} />
           </View>
         </TouchableOpacity>
 
@@ -273,66 +274,66 @@ const StatsScreen = ({ navigation }) => {
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#000000' },
-  header: { width: '100%', paddingTop: 30, paddingBottom: 25, backgroundColor: '#111', borderBottomWidth: 1, borderBottomColor: '#222', alignItems: 'center', justifyContent: 'center' },
-  headerTitle: { fontSize: 22, fontWeight: 'bold', color: '#FFF', textAlign: 'center' },
+  container: { flex: 1, backgroundColor: tc('#000000', 'bg') },
+  header: { width: '100%', paddingTop: 30, paddingBottom: 25, backgroundColor: tc('#111', 'bg'), borderBottomWidth: 1, borderBottomColor: tc('#222', 'border'), alignItems: 'center', justifyContent: 'center' },
+  headerTitle: { fontSize: 22, fontWeight: 'bold', color: tc('#FFF', 'fg'), textAlign: 'center' },
   scrollContent: { padding: 20, paddingBottom: 130 },
   sectionRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: 20, marginBottom: 12 },
-  sectionTitle: { fontSize: 20, fontWeight: 'bold', color: '#FFF', marginBottom: 12, marginTop: 20, textAlign: 'left' },
+  sectionTitle: { fontSize: 20, fontWeight: 'bold', color: tc('#FFF', 'fg'), marginBottom: 12, marginTop: 20, textAlign: 'left' },
 
-  streakCard: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#1F1408', borderRadius: 20, padding: 16, borderWidth: 1, borderColor: '#4A2A0A', gap: 14 },
+  streakCard: { flexDirection: 'row', alignItems: 'center', backgroundColor: tc('#1F1408', 'bg'), borderRadius: 20, padding: 16, borderWidth: 1, borderColor: tc('#4A2A0A', 'border'), gap: 14 },
   streakBig: { flexDirection: 'row', alignItems: 'center', gap: 4 },
-  streakNum: { color: '#FFF', fontSize: 34, fontWeight: '900' },
-  streakTitle: { color: '#FFF', fontSize: 17, fontWeight: 'bold', textAlign: 'left' },
-  streakSub: { color: '#C8A27A', fontSize: 13, marginTop: 2, textAlign: 'left' },
+  streakNum: { color: tc('#FFF', 'fg'), fontSize: 34, fontWeight: '900' },
+  streakTitle: { color: tc('#FFF', 'fg'), fontSize: 17, fontWeight: 'bold', textAlign: 'left' },
+  streakSub: { color: tc('#C8A27A', 'fg'), fontSize: 13, marginTop: 2, textAlign: 'left' },
 
   updateButton: { backgroundColor: MAIN_COLOR, paddingHorizontal: 14, paddingVertical: 8, borderRadius: 20, flexDirection: 'row', alignItems: 'center', gap: 4 },
-  updateButtonText: { color: '#000', fontWeight: 'bold', fontSize: 14 },
+  updateButtonText: { color: tc('#000', 'fg'), fontWeight: 'bold', fontSize: 14 },
   weightRow: { flexDirection: 'row', gap: 10 },
-  weightBox: { flex: 1, backgroundColor: '#1A1A1A', borderRadius: 16, padding: 14, borderWidth: 1, borderColor: '#222' },
-  weightLabel: { fontSize: 13, color: '#888', textAlign: 'left' },
-  weightValue: { fontSize: 20, fontWeight: 'bold', color: '#FFF', marginTop: 4, textAlign: 'left' },
-  weightUnit: { fontSize: 12, color: '#888', fontWeight: 'normal' },
+  weightBox: { flex: 1, backgroundColor: tc('#1A1A1A', 'bg'), borderRadius: 16, padding: 14, borderWidth: 1, borderColor: tc('#222', 'border') },
+  weightLabel: { fontSize: 13, color: tc('#888', 'fg'), textAlign: 'left' },
+  weightValue: { fontSize: 20, fontWeight: 'bold', color: tc('#FFF', 'fg'), marginTop: 4, textAlign: 'left' },
+  weightUnit: { fontSize: 12, color: tc('#888', 'fg'), fontWeight: 'normal' },
 
-  chartBox: { backgroundColor: '#1A1A1A', borderRadius: 16, padding: 14, marginTop: 12, borderWidth: 1, borderColor: '#222' },
+  chartBox: { backgroundColor: tc('#1A1A1A', 'bg'), borderRadius: 16, padding: 14, marginTop: 12, borderWidth: 1, borderColor: tc('#222', 'border') },
   chartBars: { flexDirection: 'row', alignItems: 'flex-end', justifyContent: 'space-between', height: 170 },
   barCol: { alignItems: 'center', flex: 1 },
-  bar: { width: 14, borderRadius: 7, backgroundColor: '#3A3A3A' },
-  barValue: { color: '#AAA', fontSize: 10, marginBottom: 4 },
-  barLabel: { color: '#666', fontSize: 10, marginTop: 6 },
-  chartHint: { color: '#555', fontSize: 12, textAlign: 'center', marginTop: 10 },
-  chartEmpty: { height: 130, backgroundColor: '#1A1A1A', borderRadius: 16, justifyContent: 'center', alignItems: 'center', marginTop: 12, borderWidth: 1, borderColor: '#222', paddingHorizontal: 20 },
-  chartEmptyText: { marginTop: 10, color: '#666', fontSize: 14, textAlign: 'center' },
+  bar: { width: 14, borderRadius: 7, backgroundColor: tc('#3A3A3A', 'bg') },
+  barValue: { color: tc('#AAA', 'fg'), fontSize: 10, marginBottom: 4 },
+  barLabel: { color: tc('#666', 'fg'), fontSize: 10, marginTop: 6 },
+  chartHint: { color: tc('#555', 'fg'), fontSize: 12, textAlign: 'center', marginTop: 10 },
+  chartEmpty: { height: 130, backgroundColor: tc('#1A1A1A', 'bg'), borderRadius: 16, justifyContent: 'center', alignItems: 'center', marginTop: 12, borderWidth: 1, borderColor: tc('#222', 'border'), paddingHorizontal: 20 },
+  chartEmptyText: { marginTop: 10, color: tc('#666', 'fg'), fontSize: 14, textAlign: 'center' },
 
-  plateauCard: { backgroundColor: '#101A24', borderRadius: 18, padding: 16, marginTop: 12, borderWidth: 1, borderColor: '#1E3A52' },
+  plateauCard: { backgroundColor: tc('#101A24', 'bg'), borderRadius: 18, padding: 16, marginTop: 12, borderWidth: 1, borderColor: tc('#1E3A52', 'border') },
   plateauHead: { flexDirection: 'row', alignItems: 'center', gap: 10 },
-  plateauIcon: { width: 32, height: 32, borderRadius: 16, backgroundColor: '#5DADE2', justifyContent: 'center', alignItems: 'center' },
-  plateauTitle: { color: '#FFF', fontSize: 17, fontWeight: 'bold', textAlign: 'left' },
-  plateauLead: { color: '#C8D6E5', fontSize: 14, marginTop: 10, lineHeight: 20, textAlign: 'left' },
+  plateauIcon: { width: 32, height: 32, borderRadius: 16, backgroundColor: tc('#5DADE2', 'bg'), justifyContent: 'center', alignItems: 'center' },
+  plateauTitle: { color: tc('#FFF', 'fg'), fontSize: 17, fontWeight: 'bold', textAlign: 'left' },
+  plateauLead: { color: tc('#C8D6E5', 'fg'), fontSize: 14, marginTop: 10, lineHeight: 20, textAlign: 'left' },
   reasonRow: { flexDirection: 'row', gap: 10, marginTop: 12 },
-  reasonTitle: { color: '#FFF', fontSize: 14, fontWeight: 'bold', textAlign: 'left' },
-  reasonText: { color: '#9FB3C8', fontSize: 13, marginTop: 2, lineHeight: 19, textAlign: 'left' },
-  plateauNote: { color: '#C8D6E5', fontSize: 13, marginTop: 14, lineHeight: 19, textAlign: 'left' },
-  plateauBtn: { backgroundColor: '#5DADE2', borderRadius: 20, paddingVertical: 10, alignItems: 'center', marginTop: 10 },
-  plateauBtnText: { color: '#000', fontWeight: 'bold', fontSize: 15 },
+  reasonTitle: { color: tc('#FFF', 'fg'), fontSize: 14, fontWeight: 'bold', textAlign: 'left' },
+  reasonText: { color: tc('#9FB3C8', 'fg'), fontSize: 13, marginTop: 2, lineHeight: 19, textAlign: 'left' },
+  plateauNote: { color: tc('#C8D6E5', 'fg'), fontSize: 13, marginTop: 14, lineHeight: 19, textAlign: 'left' },
+  plateauBtn: { backgroundColor: tc('#5DADE2', 'bg'), borderRadius: 20, paddingVertical: 10, alignItems: 'center', marginTop: 10 },
+  plateauBtnText: { color: tc('#000', 'fg'), fontWeight: 'bold', fontSize: 15 },
   adjustRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginTop: 10, paddingHorizontal: 4 },
-  adjustText: { color: '#888', fontSize: 13, flex: 1, textAlign: 'left' },
+  adjustText: { color: tc('#888', 'fg'), fontSize: 13, flex: 1, textAlign: 'left' },
   adjustLink: { color: MAIN_COLOR, fontWeight: 'bold', fontSize: 13 },
 
-  photosCard: { backgroundColor: '#1A1A1A', borderRadius: 20, padding: 14, borderWidth: 1, borderColor: '#222' },
+  photosCard: { backgroundColor: tc('#1A1A1A', 'bg'), borderRadius: 20, padding: 14, borderWidth: 1, borderColor: tc('#222', 'border') },
   photosRow: { flexDirection: 'row', gap: 10 },
-  photoSlot: { flex: 1, aspectRatio: 3 / 4, borderRadius: 14, overflow: 'hidden', backgroundColor: '#111' },
+  photoSlot: { flex: 1, aspectRatio: 3 / 4, borderRadius: 14, overflow: 'hidden', backgroundColor: tc('#111', 'bg') },
   photoImg: { width: '100%', height: '100%' },
-  photoEmpty: { flex: 1, justifyContent: 'center', alignItems: 'center', borderWidth: 1, borderStyle: 'dashed', borderColor: '#333', borderRadius: 14 },
+  photoEmpty: { flex: 1, justifyContent: 'center', alignItems: 'center', borderWidth: 1, borderStyle: 'dashed', borderColor: tc('#333', 'border'), borderRadius: 14 },
   photoTag: { position: 'absolute', top: 8, left: 8, backgroundColor: 'rgba(0,0,0,0.7)', color: '#FFF', fontWeight: 'bold', fontSize: 13, paddingHorizontal: 10, paddingVertical: 3, borderRadius: 10, overflow: 'hidden' },
   photosFooter: { flexDirection: 'row', alignItems: 'center', marginTop: 12, gap: 8 },
-  photosText: { color: '#BBB', fontSize: 14, flex: 1, textAlign: 'left' },
+  photosText: { color: tc('#BBB', 'fg'), fontSize: 14, flex: 1, textAlign: 'left' },
 
-  progressCard: { backgroundColor: '#1A1A1A', borderRadius: 15, padding: 15, marginBottom: 12, borderWidth: 1, borderColor: '#222' },
+  progressCard: { backgroundColor: tc('#1A1A1A', 'bg'), borderRadius: 15, padding: 15, marginBottom: 12, borderWidth: 1, borderColor: tc('#222', 'border') },
   progressInfo: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 },
-  progressLabel: { fontSize: 16, color: '#DDD', fontWeight: '600' },
-  progressValue: { fontSize: 14, color: '#AAA', fontWeight: 'bold' },
-  progressBarBackground: { height: 10, backgroundColor: '#333', borderRadius: 5, overflow: 'hidden' },
+  progressLabel: { fontSize: 16, color: tc('#DDD', 'fg'), fontWeight: '600' },
+  progressValue: { fontSize: 14, color: tc('#AAA', 'fg'), fontWeight: 'bold' },
+  progressBarBackground: { height: 10, backgroundColor: tc('#333', 'bg'), borderRadius: 5, overflow: 'hidden' },
   progressBarFill: { height: '100%', borderRadius: 5 },
 });
 

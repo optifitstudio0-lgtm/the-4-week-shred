@@ -1,5 +1,6 @@
 // صورة الوجبة: لو ليها صورة بتظهر، ولو لسه مالهاش بيظهر طبق شيك بأيقونة بدل ما الشكل يبوظ
 import React from 'react';
+import { tc } from './theme';
 import { View, Image, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 
@@ -13,7 +14,7 @@ const MealImage = ({ meal, style, dim = false }) => {
     <View style={[style, styles.center, dim && { opacity: 0.5 }]}>
       <View style={styles.plate}>
         <View style={styles.innerPlate}>
-          <Ionicons name={ICONS[meal?.category] || 'restaurant'} size={34} color="#2ECC71" />
+          <Ionicons name={ICONS[meal?.category] || 'restaurant'} size={34} color={tc("#2ECC71", 'fg')} />
         </View>
       </View>
     </View>
@@ -23,11 +24,11 @@ const MealImage = ({ meal, style, dim = false }) => {
 const styles = StyleSheet.create({
   center: { justifyContent: 'center', alignItems: 'center' },
   plate: {
-    width: '78%', aspectRatio: 1, borderRadius: 999, backgroundColor: '#2A2A2A',
-    borderWidth: 1, borderColor: '#3A3A3A', justifyContent: 'center', alignItems: 'center',
+    width: '78%', aspectRatio: 1, borderRadius: 999, backgroundColor: tc('#2A2A2A', 'bg'),
+    borderWidth: 1, borderColor: tc('#3A3A3A', 'border'), justifyContent: 'center', alignItems: 'center',
   },
   innerPlate: {
-    width: '70%', aspectRatio: 1, borderRadius: 999, backgroundColor: '#1F1F1F',
+    width: '70%', aspectRatio: 1, borderRadius: 999, backgroundColor: tc('#1F1F1F', 'bg'),
     justifyContent: 'center', alignItems: 'center',
   },
 });

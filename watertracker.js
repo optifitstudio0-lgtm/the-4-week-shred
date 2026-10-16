@@ -1,4 +1,5 @@
 import React, { useState, useRef, useCallback } from 'react';
+import { tc } from './theme';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Dimensions, Animated, Easing } from 'react-native';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -117,11 +118,11 @@ const WaterTracker = ({ navigation }) => {
     <View style={styles.container}>
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()}>
-          <Ionicons name={ICON.back} size={28} color="#FFF" />
+          <Ionicons name={ICON.back} size={28} color={tc("#FFF", 'fg')} />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>{tr('متابعة المية')}</Text>
         <TouchableOpacity onPress={resetWater}>
-          <Ionicons name="refresh-circle" size={28} color="#555" />
+          <Ionicons name="refresh-circle" size={28} color={tc("#555", 'fg')} />
         </TouchableOpacity>
       </View>
 
@@ -148,7 +149,7 @@ const WaterTracker = ({ navigation }) => {
                 top: waveTopPosition, 
                 transform: [{ rotate: waveRotate2 }],
                 opacity: 0.5,
-                backgroundColor: '#5DADE2' 
+                backgroundColor: tc('#5DADE2', 'bg') 
               }
             ]} 
           />
@@ -167,15 +168,15 @@ const WaterTracker = ({ navigation }) => {
         <Text style={styles.sectionTitle}>{tr('إضافة سريعة')}</Text>
         <View style={styles.quickAddContainer}>
           <TouchableOpacity style={styles.addButton} onPress={() => addWater(100)}>
-            <MaterialCommunityIcons name="cup" size={24} color="#3498DB" />
+            <MaterialCommunityIcons name="cup" size={24} color={tc("#3498DB", 'fg')} />
             <Text style={styles.addText}>{tr('100 مل')}</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.addButton} onPress={() => addWater(250)}>
-            <MaterialCommunityIcons name="glass-cocktail" size={28} color="#3498DB" />
+            <MaterialCommunityIcons name="glass-cocktail" size={28} color={tc("#3498DB", 'fg')} />
             <Text style={styles.addText}>{tr('250 مل')}</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.addButton} onPress={() => addWater(500)}>
-            <MaterialCommunityIcons name="bottle-soda" size={32} color="#3498DB" />
+            <MaterialCommunityIcons name="bottle-soda" size={32} color={tc("#3498DB", 'fg')} />
             <Text style={styles.addText}>{tr('500 مل')}</Text>
           </TouchableOpacity>
         </View>
@@ -205,7 +206,7 @@ const WaterTracker = ({ navigation }) => {
                         styles.barFill, 
                         { 
                           height: `${barHeight}%`, 
-                          backgroundColor: amount > 0 ? '#3498DB' : '#333',
+                          backgroundColor: amount > 0 ? tc('#3498DB', 'bg') : tc('#333', 'bg'),
                           opacity: isToday ? 1 : (amount > 0 ? 0.7 : 1)
                         }
                       ]} 
@@ -236,18 +237,18 @@ const WaterTracker = ({ navigation }) => {
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#000', paddingTop: 40 },
+  container: { flex: 1, backgroundColor: tc('#000', 'bg'), paddingTop: 40 },
   header: { flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: 20, alignItems: 'center', marginBottom: 20 },
-  headerTitle: { fontSize: 22, fontWeight: 'bold', color: '#FFF' },
+  headerTitle: { fontSize: 22, fontWeight: 'bold', color: tc('#FFF', 'fg') },
   
   mainTracker: { 
     width: 200, 
     height: 300, 
     borderWidth: 4, 
-    borderColor: '#333', 
+    borderColor: tc('#333', 'border'), 
     borderRadius: 100, 
     overflow: 'hidden', 
-    backgroundColor: '#111', 
+    backgroundColor: tc('#111', 'bg'), 
     marginBottom: 20, 
     position: 'relative'
   },
@@ -255,45 +256,45 @@ const styles = StyleSheet.create({
   wave: {
     width: 500, 
     height: 500,
-    backgroundColor: '#3498DB',
+    backgroundColor: tc('#3498DB', 'bg'),
     position: 'absolute',
     left: -150, 
     borderRadius: 200, 
   },
 
   textOverlay: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, justifyContent: 'center', alignItems: 'center', zIndex: 10 },
-  percentageText: { fontSize: 42, fontWeight: 'bold', color: '#FFF', textShadowColor: 'rgba(0,0,0,0.5)', textShadowRadius: 10 },
-  amountText: { fontSize: 16, color: '#DDD', marginTop: 5, fontWeight: '600' },
-  motivationText: { color: '#AAA', fontSize: 16, marginBottom: 30 },
-  sectionTitle: { color: '#FFF', fontSize: 18, fontWeight: 'bold', marginBottom: 15, alignSelf: 'flex-start', marginLeft: 20 },
+  percentageText: { fontSize: 42, fontWeight: 'bold', color: tc('#FFF', 'fg'), textShadowColor: tc('rgba(0,0,0,0.5)', 'shadow'), textShadowRadius: 10 },
+  amountText: { fontSize: 16, color: tc('#DDD', 'fg'), marginTop: 5, fontWeight: '600' },
+  motivationText: { color: tc('#AAA', 'fg'), fontSize: 16, marginBottom: 30 },
+  sectionTitle: { color: tc('#FFF', 'fg'), fontSize: 18, fontWeight: 'bold', marginBottom: 15, alignSelf: 'flex-start', marginLeft: 20 },
   quickAddContainer: { flexDirection: 'row', gap: 20, marginBottom: 40 },
-  addButton: { backgroundColor: '#1A1A1A', width: 90, height: 100, borderRadius: 15, justifyContent: 'center', alignItems: 'center', borderWidth: 1, borderColor: '#333' },
-  addText: { color: '#FFF', marginTop: 10, fontWeight: 'bold' },
+  addButton: { backgroundColor: tc('#1A1A1A', 'bg'), width: 90, height: 100, borderRadius: 15, justifyContent: 'center', alignItems: 'center', borderWidth: 1, borderColor: tc('#333', 'border') },
+  addText: { color: tc('#FFF', 'fg'), marginTop: 10, fontWeight: 'bold' },
   
-  historyCard: { width: width - 40, backgroundColor: '#1A1A1A', borderRadius: 20, padding: 20, borderWidth: 1, borderColor: '#333' },
-  historyTitle: { color: '#FFF', fontSize: 16, fontWeight: 'bold', marginBottom: 20 }, 
+  historyCard: { width: width - 40, backgroundColor: tc('#1A1A1A', 'bg'), borderRadius: 20, padding: 20, borderWidth: 1, borderColor: tc('#333', 'border') },
+  historyTitle: { color: tc('#FFF', 'fg'), fontSize: 16, fontWeight: 'bold', marginBottom: 20 }, 
   chartRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-end', height: 150, paddingBottom: 10 }, 
   barWrapper: { alignItems: 'center', justifyContent: 'flex-end', height: '100%', width: 30 },
   barContainer: { alignItems: 'center', gap: 8, height: '100%', justifyContent: 'flex-end' },
   barFill: { width: 8, borderRadius: 4, minHeight: 4, overflow: 'visible', position: 'relative' },
-  dayText: { color: '#666', fontSize: 12 },
-  todayText: { color: '#FFF', fontWeight: 'bold', fontSize: 14 }, 
+  dayText: { color: tc('#666', 'fg'), fontSize: 12 },
+  todayText: { color: tc('#FFF', 'fg'), fontWeight: 'bold', fontSize: 14 }, 
 
   tooltip: {
     position: 'absolute',
     top: -35, 
     left: -20, 
     width: 50, 
-    backgroundColor: '#000',
+    backgroundColor: tc('#000', 'bg'),
     paddingVertical: 4,
     borderRadius: 8,
     borderWidth: 1,
-    borderColor: '#333',
+    borderColor: tc('#333', 'border'),
     alignItems: 'center',
     justifyContent: 'center',
     zIndex: 999,
   },
-  tooltipText: { color: '#FFF', fontSize: 9, fontWeight: 'bold' },
+  tooltipText: { color: tc('#FFF', 'fg'), fontSize: 9, fontWeight: 'bold' },
   tooltipArrow: {
     position: 'absolute',
     bottom: -4,
@@ -307,7 +308,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'transparent',
     borderLeftColor: 'transparent',
     borderRightColor: 'transparent',
-    borderTopColor: '#000', 
+    borderTopColor: tc('#000', 'border'), 
   }
 });
 

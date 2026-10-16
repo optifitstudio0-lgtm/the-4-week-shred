@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
+import { tc, statusStyle } from './theme';
 import {
   View,
   Text,
@@ -20,7 +21,7 @@ import { getIsPro } from './pro';
 import { tr } from './i18n';
 
 const { width, height } = Dimensions.get('window');
-const MAIN_COLOR = '#2ECC71';
+const MAIN_COLOR = tc('#2ECC71', 'fg');
 
 // ترتيب الباقات وأسماؤها (الأسعار نفسها جاية من المتجر)
 const PLAN_META = {
@@ -145,19 +146,19 @@ const SubscriptionScreen = ({ navigation, route }) => {
 
   return (
     <View style={styles.mainContainer}>
-      <StatusBar style="light" />
+      <StatusBar style={statusStyle()} />
 
       <ImageBackground
         source={{ uri: 'https://images.unsplash.com/photo-1517836357463-d25dfeac3438?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80' }}
         style={styles.fixedBackground}
       >
-        <LinearGradient colors={['rgba(0,0,0,0.1)', '#000000']} style={styles.gradient} />
+        <LinearGradient colors={[tc('rgba(0,0,0,0.1)', 'bg'), tc('#000000', 'bg')]} style={styles.gradient} />
       </ImageBackground>
 
       <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false} bounces={false}>
         <View style={styles.closeButtonContainer}>
           <TouchableOpacity style={styles.closeButton} onPress={() => navigation.goBack()} activeOpacity={0.7}>
-            <Ionicons name="close" size={24} color="#FFF" />
+            <Ionicons name="close" size={24} color={"#FFF"} />
           </TouchableOpacity>
         </View>
 
@@ -180,7 +181,7 @@ const SubscriptionScreen = ({ navigation, route }) => {
           {features.map((feature, index) => (
             <View key={index} style={styles.featureRow}>
               <View style={styles.checkCircle}>
-                <Ionicons name="checkmark" size={14} color="#000" />
+                <Ionicons name="checkmark" size={14} color={tc("#000", 'fg')} />
               </View>
               <Text style={styles.featureText}>{feature}</Text>
             </View>
@@ -200,7 +201,7 @@ const SubscriptionScreen = ({ navigation, route }) => {
           <View style={styles.loadingBox}><ActivityIndicator color={MAIN_COLOR} /></View>
         ) : packages.length === 0 ? (
           <View style={styles.proActive}>
-            <Ionicons name="cloud-offline-outline" size={30} color="#888" />
+            <Ionicons name="cloud-offline-outline" size={30} color={tc("#888", 'fg')} />
             <Text style={styles.proActiveText}>
               {isPurchasesConfigured ? tr('معرفناش نجيب الأسعار من المتجر. اتأكد من النت وجرّب تاني.') : tr('الاشتراكات لسه مش متظبطة في التطبيق.')}
             </Text>
@@ -220,8 +221,8 @@ const SubscriptionScreen = ({ navigation, route }) => {
                     onPress={() => setSelected(pkg.identifier)}
                   >
                     {!!save && (
-                      <View style={[styles.saveBadge, isSelected ? { backgroundColor: MAIN_COLOR } : { backgroundColor: '#555' }]}>
-                        <Text style={[styles.saveText, isSelected ? { color: '#000' } : { color: '#FFF' }]}>{save}</Text>
+                      <View style={[styles.saveBadge, isSelected ? { backgroundColor: MAIN_COLOR } : { backgroundColor: tc('#555', 'bg') }]}>
+                        <Text style={[styles.saveText, isSelected ? { color: tc('#000', 'fg') } : { color: tc('#FFF', 'fg') }]}>{save}</Text>
                       </View>
                     )}
                     <View style={styles.planInfo}>
@@ -242,8 +243,8 @@ const SubscriptionScreen = ({ navigation, route }) => {
             {!!trial && <Text style={styles.trialNote}>{tr('أول {0} أيام ببلاش، ومش هيتخصم منك حاجة لو لغيت قبلها.', trial)}</Text>}
 
             <TouchableOpacity style={[styles.subscribeBtn, busy && { opacity: 0.7 }]} onPress={handleSubscribe} disabled={busy}>
-              <LinearGradient colors={[MAIN_COLOR, '#27AE60']} style={styles.btnGradient} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }}>
-                {busy ? <ActivityIndicator color="#FFF" /> : (
+              <LinearGradient colors={[MAIN_COLOR, tc('#27AE60', 'bg')]} style={styles.btnGradient} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }}>
+                {busy ? <ActivityIndicator color={tc("#FFF", 'fg')} /> : (
                   <>
                     <Text style={styles.subscribeText}>{buttonText}</Text>
                     <Text style={styles.cancelAnytime}>{subText}</Text>
@@ -285,51 +286,51 @@ const SubscriptionScreen = ({ navigation, route }) => {
 };
 
 const styles = StyleSheet.create({
-  mainContainer: { flex: 1, backgroundColor: '#000' },
+  mainContainer: { flex: 1, backgroundColor: tc('#000', 'bg') },
   fixedBackground: { position: 'absolute', top: 0, left: 0, width: width, height: height * 0.6, zIndex: 0 },
   gradient: { position: 'absolute', left: 0, right: 0, bottom: 0, height: '100%' },
   scrollContent: { paddingHorizontal: 20, paddingBottom: 30 },
   closeButtonContainer: { alignItems: 'flex-end', marginTop: Platform.OS === 'android' ? 45 : 55, marginBottom: 10 },
   closeButton: { width: 36, height: 36, borderRadius: 18, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'center', alignItems: 'center', borderWidth: 1, borderColor: 'rgba(255,255,255,0.2)' },
   headerTitleContainer: { alignItems: 'center', marginBottom: 25 },
-  proBadge: { backgroundColor: MAIN_COLOR, paddingHorizontal: 12, paddingVertical: 4, borderRadius: 8, fontSize: 14, fontWeight: '900', color: '#000', marginBottom: 10, overflow: 'hidden' },
-  title: { fontSize: 26, fontWeight: 'bold', color: '#FFF', textAlign: 'center', marginBottom: 8 },
-  subtitle: { fontSize: 14, color: '#AAA', textAlign: 'center', paddingHorizontal: 10, lineHeight: 20 },
-  featuresContainer: { marginBottom: 25, backgroundColor: '#111', borderRadius: 20, padding: 20, borderWidth: 1, borderColor: '#222' },
+  proBadge: { backgroundColor: MAIN_COLOR, paddingHorizontal: 12, paddingVertical: 4, borderRadius: 8, fontSize: 14, fontWeight: '900', color: tc('#000', 'fg'), marginBottom: 10, overflow: 'hidden' },
+  title: { fontSize: 26, fontWeight: 'bold', color: tc('#FFF', 'fg'), textAlign: 'center', marginBottom: 8 },
+  subtitle: { fontSize: 14, color: tc('#AAA', 'fg'), textAlign: 'center', paddingHorizontal: 10, lineHeight: 20 },
+  featuresContainer: { marginBottom: 25, backgroundColor: tc('#111', 'bg'), borderRadius: 20, padding: 20, borderWidth: 1, borderColor: tc('#222', 'border') },
   featureRow: { flexDirection: 'row', alignItems: 'center', marginBottom: 12 },
   checkCircle: { width: 20, height: 20, borderRadius: 10, backgroundColor: MAIN_COLOR, justifyContent: 'center', alignItems: 'center', marginRight: 12 },
-  featureText: { fontSize: 14, color: '#DDD', fontWeight: '500', flex: 1, textAlign: 'left' },
+  featureText: { fontSize: 14, color: tc('#DDD', 'fg'), fontWeight: '500', flex: 1, textAlign: 'left' },
   plansContainer: { marginBottom: 20 },
-  planCard: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', backgroundColor: '#1A1A1A', borderRadius: 16, padding: 18, marginBottom: 12, borderWidth: 2, borderColor: '#333', position: 'relative' },
-  selectedCard: { borderColor: MAIN_COLOR, backgroundColor: 'rgba(46, 204, 113, 0.05)' },
+  planCard: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', backgroundColor: tc('#1A1A1A', 'bg'), borderRadius: 16, padding: 18, marginBottom: 12, borderWidth: 2, borderColor: tc('#333', 'border'), position: 'relative' },
+  selectedCard: { borderColor: MAIN_COLOR, backgroundColor: tc('rgba(46, 204, 113, 0.05)', 'bg') },
   saveBadge: { position: 'absolute', top: -10, right: 20, paddingHorizontal: 8, paddingVertical: 2, borderRadius: 8 },
   saveText: { fontSize: 10, fontWeight: 'bold' },
   planInfo: {},
-  planTitle: { fontSize: 14, color: '#AAA', fontWeight: 'bold', marginBottom: 4, textTransform: 'uppercase' },
+  planTitle: { fontSize: 14, color: tc('#AAA', 'fg'), fontWeight: 'bold', marginBottom: 4, textTransform: 'uppercase' },
   priceRow: { flexDirection: 'row', alignItems: 'baseline' },
-  planPrice: { fontSize: 22, fontWeight: 'bold', color: '#FFF' },
-  planPeriod: { fontSize: 14, color: '#888', marginLeft: 2 },
-  radioCircle: { width: 22, height: 22, borderRadius: 11, borderWidth: 2, borderColor: '#555', justifyContent: 'center', alignItems: 'center' },
+  planPrice: { fontSize: 22, fontWeight: 'bold', color: tc('#FFF', 'fg') },
+  planPeriod: { fontSize: 14, color: tc('#888', 'fg'), marginLeft: 2 },
+  radioCircle: { width: 22, height: 22, borderRadius: 11, borderWidth: 2, borderColor: tc('#555', 'border'), justifyContent: 'center', alignItems: 'center' },
   radioDot: { width: 12, height: 12, borderRadius: 6, backgroundColor: MAIN_COLOR },
   subscribeBtn: { width: '100%', borderRadius: 30, overflow: 'hidden', marginBottom: 20, shadowColor: MAIN_COLOR, shadowOffset: { width: 0, height: 5 }, shadowOpacity: 0.3, shadowRadius: 10, elevation: 5 },
   btnGradient: { paddingVertical: 16, alignItems: 'center', justifyContent: 'center' },
-  subscribeText: { fontSize: 16, fontWeight: 'bold', color: '#FFF', textTransform: 'uppercase' },
-  cancelAnytime: { fontSize: 11, color: 'rgba(255,255,255,0.8)', marginTop: 4 },
+  subscribeText: { fontSize: 16, fontWeight: 'bold', color: tc('#FFF', 'fg'), textTransform: 'uppercase' },
+  cancelAnytime: { fontSize: 11, color: tc('rgba(255,255,255,0.8)', 'fg'), marginTop: 4 },
   trialToggleContainer: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', marginBottom: 25 },
-  trialToggleText: { marginLeft: 10, fontSize: 14, color: '#888', fontWeight: '600' },
+  trialToggleText: { marginLeft: 10, fontSize: 14, color: tc('#888', 'fg'), fontWeight: '600' },
   footer: { flexDirection: 'row', justifyContent: 'center', alignItems: 'center', flexWrap: 'wrap' },
-  reasonBox: { flexDirection: 'row', alignItems: 'center', gap: 8, backgroundColor: 'rgba(46,204,113,0.12)', borderRadius: 12, padding: 12, marginBottom: 20, borderWidth: 1, borderColor: 'rgba(46,204,113,0.3)' },
-  reasonText: { color: '#FFF', fontSize: 13, flex: 1, lineHeight: 20, textAlign: 'left' },
+  reasonBox: { flexDirection: 'row', alignItems: 'center', gap: 8, backgroundColor: tc('rgba(46,204,113,0.12)', 'bg'), borderRadius: 12, padding: 12, marginBottom: 20, borderWidth: 1, borderColor: tc('rgba(46,204,113,0.3)', 'border') },
+  reasonText: { color: tc('#FFF', 'fg'), fontSize: 13, flex: 1, lineHeight: 20, textAlign: 'left' },
   trialNote: { color: MAIN_COLOR, fontSize: 13, fontWeight: '600', textAlign: 'center', marginBottom: 12 },
-  legalNote: { color: '#666', fontSize: 11, textAlign: 'center', lineHeight: 17, marginBottom: 15, paddingHorizontal: 5 },
-  proActive: { alignItems: 'center', backgroundColor: '#111', borderRadius: 20, padding: 22, borderWidth: 1, borderColor: MAIN_COLOR, marginBottom: 20 },
-  proActiveTitle: { color: '#FFF', fontSize: 18, fontWeight: 'bold', marginTop: 8 },
-  proActiveText: { color: '#AAA', fontSize: 13, textAlign: 'center', marginTop: 6, lineHeight: 20 },
+  legalNote: { color: tc('#666', 'fg'), fontSize: 11, textAlign: 'center', lineHeight: 17, marginBottom: 15, paddingHorizontal: 5 },
+  proActive: { alignItems: 'center', backgroundColor: tc('#111', 'bg'), borderRadius: 20, padding: 22, borderWidth: 1, borderColor: MAIN_COLOR, marginBottom: 20 },
+  proActiveTitle: { color: tc('#FFF', 'fg'), fontSize: 18, fontWeight: 'bold', marginTop: 8 },
+  proActiveText: { color: tc('#AAA', 'fg'), fontSize: 13, textAlign: 'center', marginTop: 6, lineHeight: 20 },
   loadingBox: { paddingVertical: 30, alignItems: 'center' },
-  devBtn: { alignSelf: 'center', paddingVertical: 8, paddingHorizontal: 14, borderRadius: 10, borderWidth: 1, borderColor: '#444', marginBottom: 15 },
-  devBtnText: { color: '#888', fontSize: 12 },
-  footerLink: { color: '#666', fontSize: 11, textDecorationLine: 'underline' },
-  footerDivider: { color: '#666', fontSize: 11, marginHorizontal: 8 },
+  devBtn: { alignSelf: 'center', paddingVertical: 8, paddingHorizontal: 14, borderRadius: 10, borderWidth: 1, borderColor: tc('#444', 'border'), marginBottom: 15 },
+  devBtnText: { color: tc('#888', 'fg'), fontSize: 12 },
+  footerLink: { color: tc('#666', 'fg'), fontSize: 11, textDecorationLine: 'underline' },
+  footerDivider: { color: tc('#666', 'fg'), fontSize: 11, marginHorizontal: 8 },
 });
 
 export default SubscriptionScreen;

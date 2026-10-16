@@ -1,4 +1,5 @@
 import React, { useState, useCallback, useMemo } from 'react';
+import { tc, statusStyle } from './theme';
 import {
   View, Text, SafeAreaView, ScrollView,
   TouchableOpacity, Linking, StyleSheet, Image, Platform
@@ -11,13 +12,13 @@ import { LANG } from './i18n';
 
 // ✅ تعريف الثيم
 const appTheme = {
-    background: '#000000',      
-    card: '#1A1A1A',            
-    textPrimary: '#FFFFFF',     
-    textSecondary: '#BBBBBB',   
-    primary: '#2ECC71',         
-    contactBg: '#252525',       
-    contactText: '#2ECC71',     
+    background: tc('#000000', 'bg'),      
+    card: tc('#1A1A1A', 'bg'),            
+    textPrimary: tc('#FFFFFF', 'fg'),     
+    textSecondary: tc('#BBBBBB', 'fg'),   
+    primary: tc('#2ECC71', 'fg'),         
+    contactBg: tc('#252525', 'bg'),       
+    contactText: tc('#2ECC71', 'fg'),     
 };
 
 // ✅ المحتوى (عربي وإنجليزي)
@@ -95,7 +96,7 @@ const AboutScreen = ({ route }) => {
 
     return (
         <SafeAreaView style={styles.rootContainer}>
-            <StatusBar style="light" />
+            <StatusBar style={statusStyle()} />
             
             {/* Header */}
             <View style={styles.customHeader}>
@@ -177,14 +178,14 @@ const createStyles = (theme, isRTL) => StyleSheet.create({
     
     header: { alignItems: 'center', marginBottom: 30, marginTop: 10 },
     logoContainer: { 
-        width: 80, height: 80, borderRadius: 40, backgroundColor: '#1A1A1A', 
+        width: 80, height: 80, borderRadius: 40, backgroundColor: tc('#1A1A1A', 'bg'), 
         justifyContent: 'center', alignItems: 'center', marginBottom: 10,
         borderWidth: 2, borderColor: theme.primary
     },
     appName: { fontSize: 28, fontWeight: 'bold', color: theme.textPrimary, textAlign: 'center' },
     slogan: { fontSize: 14, color: theme.primary, marginTop: 4, fontWeight: '600' },
     
-    card: { backgroundColor: theme.card, borderRadius: 16, padding: 20, marginBottom: 20, borderWidth: 1, borderColor: '#333' },
+    card: { backgroundColor: theme.card, borderRadius: 16, padding: 20, marginBottom: 20, borderWidth: 1, borderColor: tc('#333', 'border') },
     
     sectionTitle: { 
         fontSize: 18, fontWeight: 'bold', color: theme.primary, marginBottom: 15, 
@@ -224,7 +225,7 @@ const createStyles = (theme, isRTL) => StyleSheet.create({
         alignSelf: isRTL ? 'flex-end' : 'flex-start'
     },
     contactText: { fontSize: 15, color: theme.textPrimary, fontWeight: '600', marginHorizontal: 10 },
-    footerText: { textAlign: 'center', color: '#555', marginTop: 10, fontSize: 12 },
+    footerText: { textAlign: 'center', color: tc('#555', 'fg'), marginTop: 10, fontSize: 12 },
 });
 
 export default AboutScreen;

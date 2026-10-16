@@ -1,4 +1,5 @@
 import React, { useState, useCallback } from 'react';
+import { tc, statusStyle } from './theme';
 import { 
   View, 
   Text, 
@@ -18,7 +19,7 @@ import { ICON } from './rtl';
 import { currentUser, logOut } from './auth';
 import { tr } from './i18n';
 
-const MAIN_COLOR = '#2ECC71';
+const MAIN_COLOR = tc('#2ECC71', 'fg');
 
 const ProfileScreen = ({ navigation }) => {
   const [userData, setUserData] = useState({
@@ -103,18 +104,18 @@ const ProfileScreen = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      <StatusBar style="light" />
+      <StatusBar style={statusStyle()} />
 
       {/* --- Header --- */}
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()} style={styles.iconBtn}>
-          <Ionicons name={ICON.back} size={28} color="#FFF" />
+          <Ionicons name={ICON.back} size={28} color={tc("#FFF", 'fg')} />
         </TouchableOpacity>
         
         <Text style={styles.headerTitle}>{tr('حسابي')}</Text>
         
         <TouchableOpacity style={styles.iconBtn} onPress={() => navigation.navigate('Setting')}>
-          <Ionicons name="settings-outline" size={24} color="#FFF" />
+          <Ionicons name="settings-outline" size={24} color={tc("#FFF", 'fg')} />
         </TouchableOpacity>
       </View>
 
@@ -122,7 +123,7 @@ const ProfileScreen = ({ navigation }) => {
         
         {/* --- Profile Card --- */}
         <View style={styles.profileCard}>
-          <View style={[styles.avatarContainer, userData.isPro && { borderColor: MAIN_COLOR }, !userData.isPro && { borderColor: '#555' }]}>
+          <View style={[styles.avatarContainer, userData.isPro && { borderColor: MAIN_COLOR }, !userData.isPro && { borderColor: tc('#555', 'border') }]}>
             <Image 
               source={userData.profileImage ? { uri: userData.profileImage } : require('./assets/profile.png')} 
               style={styles.profileImage}
@@ -134,7 +135,7 @@ const ProfileScreen = ({ navigation }) => {
             {userData.name}
           </Text>
           
-          <Text style={[styles.userPlan, !userData.isPro && { color: '#888' }]}>
+          <Text style={[styles.userPlan, !userData.isPro && { color: tc('#888', 'fg') }]}>
             {tr('تحدي الـ4 أسابيع • ')}{userData.isPro ? tr('عضو برو 👑') : tr('عضوية مجانية')}
           </Text>
         </View>
@@ -166,23 +167,23 @@ const ProfileScreen = ({ navigation }) => {
               <Ionicons name="person-outline" size={22} color={MAIN_COLOR} />
             </View>
             <Text style={styles.menuText}>{tr('تعديل البيانات')}</Text>
-            <Ionicons name={ICON.chevronNext} size={20} color="#555" />
+            <Ionicons name={ICON.chevronNext} size={20} color={tc("#555", 'fg')} />
           </TouchableOpacity>
 
           <TouchableOpacity style={styles.menuItem} onPress={() => navigation.navigate('ProgressPhotos')}>
-            <View style={[styles.menuIconBox, { backgroundColor: 'rgba(255,107,129,0.12)' }]}>
-              <Ionicons name="camera-outline" size={22} color="#FF6B81" />
+            <View style={[styles.menuIconBox, { backgroundColor: tc('rgba(255,107,129,0.12)', 'bg') }]}>
+              <Ionicons name="camera-outline" size={22} color={tc("#FF6B81", 'fg')} />
             </View>
             <Text style={styles.menuText}>{tr('صور قبل وبعد')}</Text>
-            <Ionicons name={ICON.chevronNext} size={20} color="#555" />
+            <Ionicons name={ICON.chevronNext} size={20} color={tc("#555", 'fg')} />
           </TouchableOpacity>
 
           <TouchableOpacity style={styles.menuItem} onPress={() => navigation.navigate('Achievements')}>
-            <View style={[styles.menuIconBox, { backgroundColor: 'rgba(255,215,0,0.12)' }]}>
-              <Ionicons name="medal-outline" size={22} color="#FFD700" />
+            <View style={[styles.menuIconBox, { backgroundColor: tc('rgba(255,215,0,0.12)', 'bg') }]}>
+              <Ionicons name="medal-outline" size={22} color={tc("#FFD700", 'fg')} />
             </View>
             <Text style={styles.menuText}>{tr('البادچات والشهادة')}</Text>
-            <Ionicons name={ICON.chevronNext} size={20} color="#555" />
+            <Ionicons name={ICON.chevronNext} size={20} color={tc("#555", 'fg')} />
           </TouchableOpacity>
 
           <TouchableOpacity style={styles.menuItem} onPress={() => navigation.navigate('Reminders')}>
@@ -190,7 +191,7 @@ const ProfileScreen = ({ navigation }) => {
               <Ionicons name="notifications-outline" size={22} color={MAIN_COLOR} />
             </View>
             <Text style={styles.menuText}>{tr('التذكيرات')}</Text>
-            <Ionicons name={ICON.chevronNext} size={20} color="#555" />
+            <Ionicons name={ICON.chevronNext} size={20} color={tc("#555", 'fg')} />
           </TouchableOpacity>
 
           {/* زر مزامنة الحساب */}
@@ -199,7 +200,7 @@ const ProfileScreen = ({ navigation }) => {
               <Ionicons name="cloud-upload-outline" size={22} color={MAIN_COLOR} />
             </View>
             <Text style={styles.menuText}>{currentUser() ? tr('حسابك') : tr('اعمل حساب')}</Text>
-            <Ionicons name={ICON.chevronNext} size={20} color="#555" />
+            <Ionicons name={ICON.chevronNext} size={20} color={tc("#555", 'fg')} />
           </TouchableOpacity>
 
           <TouchableOpacity style={styles.menuItem} onPress={() => navigation.navigate('Subscription')}>
@@ -208,12 +209,12 @@ const ProfileScreen = ({ navigation }) => {
             </View>
             <Text style={styles.menuText}>{tr('الاشتراك')}</Text>
             
-            <View style={[styles.proBadge, !userData.isPro && { backgroundColor: '#555' }]}>
-              <Text style={[styles.proText, !userData.isPro && { color: '#FFF' }]}>
+            <View style={[styles.proBadge, !userData.isPro && { backgroundColor: tc('#555', 'bg') }]}>
+              <Text style={[styles.proText, !userData.isPro && { color: tc('#FFF', 'fg') }]}>
                 {userData.isPro ? tr('مفعّل') : tr('اشترك برو')}
               </Text>
             </View>
-            <Ionicons name={ICON.chevronNext} size={20} color="#555" />
+            <Ionicons name={ICON.chevronNext} size={20} color={tc("#555", 'fg')} />
           </TouchableOpacity>
         </View>
 
@@ -222,26 +223,26 @@ const ProfileScreen = ({ navigation }) => {
           <Text style={styles.sectionTitle}>{tr('الدعم')}</Text>
           
           <TouchableOpacity style={styles.menuItem} onPress={() => navigation.navigate('Help')}>
-            <View style={[styles.menuIconBox, { backgroundColor: '#333' }]}>
-              <Ionicons name="help-circle-outline" size={22} color="#FFF" />
+            <View style={[styles.menuIconBox, { backgroundColor: tc('#333', 'bg') }]}>
+              <Ionicons name="help-circle-outline" size={22} color={tc("#FFF", 'fg')} />
             </View>
             <Text style={styles.menuText}>{tr('المساعدة والأسئلة الشائعة')}</Text>
-            <Ionicons name={ICON.chevronNext} size={20} color="#555" />
+            <Ionicons name={ICON.chevronNext} size={20} color={tc("#555", 'fg')} />
           </TouchableOpacity>
 
           <TouchableOpacity style={styles.menuItem} onPress={() => navigation.navigate('About')}>
-            <View style={[styles.menuIconBox, { backgroundColor: '#333' }]}>
-              <Ionicons name="information-circle-outline" size={22} color="#FFF" />
+            <View style={[styles.menuIconBox, { backgroundColor: tc('#333', 'bg') }]}>
+              <Ionicons name="information-circle-outline" size={22} color={tc("#FFF", 'fg')} />
             </View>
             <Text style={styles.menuText}>{tr('عن التطبيق')}</Text>
-            <Ionicons name={ICON.chevronNext} size={20} color="#555" />
+            <Ionicons name={ICON.chevronNext} size={20} color={tc("#555", 'fg')} />
           </TouchableOpacity>
           
           <TouchableOpacity style={styles.menuItem} onPress={handleLogout}>
-            <View style={[styles.menuIconBox, { backgroundColor: 'rgba(231, 76, 60, 0.2)' }]}>
-              <Ionicons name="log-out-outline" size={22} color="#E74C3C" />
+            <View style={[styles.menuIconBox, { backgroundColor: tc('rgba(231, 76, 60, 0.2)', 'bg') }]}>
+              <Ionicons name="log-out-outline" size={22} color={tc("#E74C3C", 'fg')} />
             </View>
-            <Text style={[styles.menuText, { color: '#E74C3C' }]}>{tr('تسجيل الخروج')}</Text>
+            <Text style={[styles.menuText, { color: tc('#E74C3C', 'fg') }]}>{tr('تسجيل الخروج')}</Text>
           </TouchableOpacity>
         </View>
 
@@ -251,7 +252,7 @@ const ProfileScreen = ({ navigation }) => {
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#000000' },
+  container: { flex: 1, backgroundColor: tc('#000000', 'bg') },
   header: {
     paddingTop: 30,
     paddingBottom: 20,
@@ -259,39 +260,39 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    backgroundColor: '#111',
+    backgroundColor: tc('#111', 'bg'),
     borderBottomWidth: 1,
-    borderBottomColor: '#222',
+    borderBottomColor: tc('#222', 'border'),
   },
   headerTitle: {
     flex: 1,
     textAlign: 'center',
     fontSize: 22,
     fontWeight: 'bold',
-    color: '#FFF',
+    color: tc('#FFF', 'fg'),
   },
   iconBtn: { width: 40, alignItems: 'center', justifyContent: 'center' },
   content: { paddingHorizontal: 20, paddingBottom: 40 },
   
   profileCard: { alignItems: 'center', marginBottom: 30, width: '100%' },
-  avatarContainer: { width: 100, height: 100, borderRadius: 50, backgroundColor: '#333', justifyContent: 'center', alignItems: 'center', marginBottom: 15, borderWidth: 2, overflow: 'hidden' },
+  avatarContainer: { width: 100, height: 100, borderRadius: 50, backgroundColor: tc('#333', 'bg'), justifyContent: 'center', alignItems: 'center', marginBottom: 15, borderWidth: 2, overflow: 'hidden' },
   profileImage: { width: '100%', height: '100%' },
   
-  userName: { fontSize: 24, fontWeight: 'bold', color: '#FFF', marginBottom: 5, textAlign: 'center', paddingHorizontal: 20, width: '100%' },
+  userName: { fontSize: 24, fontWeight: 'bold', color: tc('#FFF', 'fg'), marginBottom: 5, textAlign: 'center', paddingHorizontal: 20, width: '100%' },
   userPlan: { fontSize: 14, color: MAIN_COLOR, fontWeight: '600' },
-  statsRow: { flexDirection: 'row', backgroundColor: '#1A1A1A', borderRadius: 20, padding: 20, justifyContent: 'space-between', alignItems: 'center', marginBottom: 30, borderWidth: 1, borderColor: '#333' },
+  statsRow: { flexDirection: 'row', backgroundColor: tc('#1A1A1A', 'bg'), borderRadius: 20, padding: 20, justifyContent: 'space-between', alignItems: 'center', marginBottom: 30, borderWidth: 1, borderColor: tc('#333', 'border') },
   statItem: { alignItems: 'center', flex: 1 },
-  statValue: { fontSize: 20, fontWeight: 'bold', color: '#FFF' },
-  statUnit: { fontSize: 12, color: '#888', fontWeight: 'normal' },
-  statLabel: { fontSize: 12, color: '#888', marginTop: 4 },
-  divider: { width: 1, height: 30, backgroundColor: '#333' },
-  sectionTitle: { fontSize: 16, fontWeight: 'bold', color: '#888', marginBottom: 15, marginLeft: 5, textAlign: 'left' },
+  statValue: { fontSize: 20, fontWeight: 'bold', color: tc('#FFF', 'fg') },
+  statUnit: { fontSize: 12, color: tc('#888', 'fg'), fontWeight: 'normal' },
+  statLabel: { fontSize: 12, color: tc('#888', 'fg'), marginTop: 4 },
+  divider: { width: 1, height: 30, backgroundColor: tc('#333', 'bg') },
+  sectionTitle: { fontSize: 16, fontWeight: 'bold', color: tc('#888', 'fg'), marginBottom: 15, marginLeft: 5, textAlign: 'left' },
   menuContainer: { marginBottom: 25 },
-  menuItem: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#1A1A1A', marginBottom: 10, padding: 15, borderRadius: 15 },
-  menuIconBox: { width: 40, height: 40, borderRadius: 12, backgroundColor: 'rgba(46, 204, 113, 0.1)', justifyContent: 'center', alignItems: 'center', marginRight: 15 },
-  menuText: { flex: 1, fontSize: 16, color: '#FFF', fontWeight: '600', textAlign: 'left' },
+  menuItem: { flexDirection: 'row', alignItems: 'center', backgroundColor: tc('#1A1A1A', 'bg'), marginBottom: 10, padding: 15, borderRadius: 15 },
+  menuIconBox: { width: 40, height: 40, borderRadius: 12, backgroundColor: tc('rgba(46, 204, 113, 0.1)', 'bg'), justifyContent: 'center', alignItems: 'center', marginRight: 15 },
+  menuText: { flex: 1, fontSize: 16, color: tc('#FFF', 'fg'), fontWeight: '600', textAlign: 'left' },
   proBadge: { backgroundColor: MAIN_COLOR, paddingHorizontal: 8, paddingVertical: 4, borderRadius: 6, marginRight: 10 },
-  proText: { fontSize: 12, fontWeight: 'bold', color: '#000' },
+  proText: { fontSize: 12, fontWeight: 'bold', color: tc('#000', 'fg') },
 });
 
 export default ProfileScreen;

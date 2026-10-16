@@ -4,7 +4,7 @@
     "slug": "the-4-week-shred",
     "version": "1.8.0",
     "orientation": "portrait",
-    "userInterfaceStyle": "light",
+    "userInterfaceStyle": "automatic",
     "splash": { "image": "./assets/splash.png", "resizeMode": "contain", "backgroundColor": "#000000" },
     "ios": { "bundleIdentifier": "com.yourname.shred", "usesAppleSignIn": true, "supportsTablet": false },
     "android": { "package": "com.yourname.shred", "allowBackup": true },

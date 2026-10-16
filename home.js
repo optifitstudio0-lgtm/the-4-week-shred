@@ -1,4 +1,5 @@
 import React, { useState, useCallback } from 'react';
+import { tc, statusStyle } from './theme';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView, ImageBackground, Image, Alert } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { Ionicons } from '@expo/vector-icons';
@@ -17,8 +18,8 @@ import { tr } from './i18n';
 import { getIsPro, isDayPro, openPaywall } from './pro';
 import { getCycleInfo, getCycleSettings, periodStartedToday } from './cycle';
 
-const MAIN_COLOR = '#2ECC71';
-const WATER_COLOR = '#3498DB';
+const MAIN_COLOR = tc('#2ECC71', 'fg');
+const WATER_COLOR = tc('#3498DB', 'fg');
 
 const HomeScreen = ({ navigation }) => {
   const [waterIntake, setWaterIntake] = useState(0);
@@ -153,20 +154,20 @@ const HomeScreen = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      <StatusBar style="light" />
+      <StatusBar style={statusStyle()} />
 
       <View style={styles.header}>
         <View style={{ flex: 1 }}>
           <Text style={styles.greeting}>
-            {tr('أهلًا يا ')}{name || tr('بطل')} <Ionicons name="flame" size={24} color="#E74C3C" />
+            {tr('أهلًا يا ')}{name || tr('بطل')} <Ionicons name="flame" size={24} color={tc("#E74C3C", 'fg')} />
           </Text>
           <Text style={styles.date}>
             {formatToday()}{tr(' • اليوم ')}<Text style={{ color: MAIN_COLOR }}>{currentDay}</Text>{tr(' من 28')}
           </Text>
         </View>
         <TouchableOpacity style={styles.streakChip} onPress={() => navigation.navigate('Achievements')}>
-          <Ionicons name="flame" size={18} color={streak.current > 0 ? '#FF7A00' : '#555'} />
-          <Text style={[styles.streakChipText, streak.current === 0 && { color: '#777' }]}>{streak.current}</Text>
+          <Ionicons name="flame" size={18} color={streak.current > 0 ? tc('#FF7A00', 'fg') : tc('#555', 'fg')} />
+          <Text style={[styles.streakChipText, streak.current === 0 && { color: tc('#777', 'fg') }]}>{streak.current}</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.profileBtn} onPress={() => navigation.navigate('Profile')}>
           <Image source={userImage ? { uri: userImage } : require('./assets/profile.png')} style={styles.profileImage} />
@@ -177,7 +178,7 @@ const HomeScreen = ({ navigation }) => {
         {showReminderCard && (
           <View style={styles.reminderCard}>
             <View style={styles.reminderIcon}>
-              <Ionicons name="notifications" size={22} color="#000" />
+              <Ionicons name="notifications" size={22} color={tc("#000", 'fg')} />
             </View>
             <View style={{ flex: 1 }}>
               <Text style={styles.reminderTitle}>{tr('فعّل التذكيرات')}</Text>
@@ -192,27 +193,27 @@ const HomeScreen = ({ navigation }) => {
               </View>
             </View>
             <TouchableOpacity onPress={dismissReminderCard} hitSlop={10}>
-              <Ionicons name="close" size={20} color="#666" />
+              <Ionicons name="close" size={20} color={tc("#666", 'fg')} />
             </TouchableOpacity>
           </View>
         )}
 
         {showCycleSetup && (
           <View style={[styles.reminderCard, styles.cycleSetupCard]}>
-            <View style={[styles.reminderIcon, { backgroundColor: '#FF6B81' }]}>
-              <Ionicons name="flower" size={22} color="#000" />
+            <View style={[styles.reminderIcon, { backgroundColor: tc('#FF6B81', 'bg') }]}>
+              <Ionicons name="flower" size={22} color={tc("#000", 'fg')} />
             </View>
             <View style={{ flex: 1 }}>
               <Text style={styles.reminderTitle}>{tr('خطة على حسب دورتك')}</Text>
               <Text style={styles.reminderText}>{tr('التمرين والسعرات يتظبطوا على كل مرحلة، وتعرفي إمتى الوزن الزيادة مية بس.')}</Text>
               <View style={styles.reminderActions}>
-                <TouchableOpacity style={[styles.reminderBtn, { backgroundColor: '#FF6B81' }]} onPress={() => navigation.navigate('Cycle')}>
+                <TouchableOpacity style={[styles.reminderBtn, { backgroundColor: tc('#FF6B81', 'bg') }]} onPress={() => navigation.navigate('Cycle')}>
                   <Text style={styles.reminderBtnText}>{tr('ظبّطيها')}</Text>
                 </TouchableOpacity>
               </View>
             </View>
             <TouchableOpacity onPress={dismissCycleCard} hitSlop={10}>
-              <Ionicons name="close" size={20} color="#666" />
+              <Ionicons name="close" size={20} color={tc("#666", 'fg')} />
             </TouchableOpacity>
           </View>
         )}
@@ -236,14 +237,14 @@ const HomeScreen = ({ navigation }) => {
 
         <View style={styles.statsContainer}>
           <View style={styles.statCard}>
-            <View style={styles.iconBg}><Ionicons name="flame" size={24} color="#E74C3C" /></View>
+            <View style={styles.iconBg}><Ionicons name="flame" size={24} color={tc("#E74C3C", 'fg')} /></View>
             <View>
               <Text style={styles.statValue}>{calories}</Text>
               <Text style={styles.statLabel}>{tr('سعرات اليوم')}</Text>
             </View>
           </View>
           <View style={styles.statCard}>
-            <View style={[styles.iconBg, { backgroundColor: 'rgba(52, 152, 219, 0.2)' }]}><Ionicons name="nutrition" size={24} color={WATER_COLOR} /></View>
+            <View style={[styles.iconBg, { backgroundColor: tc('rgba(52, 152, 219, 0.2)', 'bg') }]}><Ionicons name="nutrition" size={24} color={WATER_COLOR} /></View>
             <View>
               <Text style={styles.statValue}>{protein}{tr(' جم')}</Text>
               <Text style={styles.statLabel}>{tr('هدف البروتين')}</Text>
@@ -255,7 +256,7 @@ const HomeScreen = ({ navigation }) => {
           <Text style={styles.sectionTitle}>{tr('تمرين النهارده')}</Text>
           {streak.trainedToday && (
             <View style={styles.doneTodayChip}>
-              <Ionicons name="checkmark-circle" size={14} color="#000" />
+              <Ionicons name="checkmark-circle" size={14} color={tc("#000", 'fg')} />
               <Text style={styles.doneTodayText}>{tr('اتمرنت النهارده')}</Text>
             </View>
           )}
@@ -263,16 +264,16 @@ const HomeScreen = ({ navigation }) => {
 
         {challengeDone ? (
           <LinearGradient colors={['#1E5631', '#0B2414']} style={[styles.workoutCard, styles.finishedCard]}>
-            <Ionicons name="ribbon" size={40} color="#FFD700" />
+            <Ionicons name="ribbon" size={40} color={"#FFD700"} />
             <Text style={styles.workoutTitle}>{round > 1 ? tr('خلّصت الجولة {0}! 🏆', round) : tr('خلّصت التحدي! 🏆')}</Text>
             <Text style={styles.metaText}>{tr('الجولة {0}: {1}', nextRound, roundHint(nextRound))}</Text>
             <View style={styles.finishedBtns}>
               <TouchableOpacity style={styles.nextRoundBtn} onPress={beginNextRound}>
-                <Ionicons name={isPro ? 'repeat' : 'lock-closed'} size={16} color="#000" />
+                <Ionicons name={isPro ? 'repeat' : 'lock-closed'} size={16} color={"#000"} />
                 <Text style={styles.nextRoundText}>{tr('ابدأ الجولة {0}', nextRound)}</Text>
               </TouchableOpacity>
               <TouchableOpacity style={styles.certBtn} onPress={() => navigation.navigate('Achievements', { showCertificate: true })}>
-                <Ionicons name="share-social" size={16} color="#FFD700" />
+                <Ionicons name="share-social" size={16} color={"#FFD700"} />
                 <Text style={styles.certBtnText}>{tr('شهادتك')}</Text>
               </TouchableOpacity>
             </View>
@@ -288,13 +289,13 @@ const HomeScreen = ({ navigation }) => {
                     </View>
                     {round > 1 && (
                       <View style={styles.roundTag}>
-                        <Ionicons name="repeat" size={12} color="#000" />
+                        <Ionicons name="repeat" size={12} color={"#000"} />
                         <Text style={styles.proTagText}>{roundLabel(round)}</Text>
                       </View>
                     )}
                     {locked && (
                       <View style={styles.proTag}>
-                        <Ionicons name="star" size={12} color="#000" />
+                        <Ionicons name="star" size={12} color={"#000"} />
                         <Text style={styles.proTagText}>PRO</Text>
                       </View>
                     )}
@@ -319,12 +320,12 @@ const HomeScreen = ({ navigation }) => {
 
         <View style={styles.quickRow}>
           <TouchableOpacity style={styles.quickTile} onPress={() => navigation.navigate('ProgressPhotos')}>
-            <Ionicons name="camera" size={24} color="#FF6B81" />
+            <Ionicons name="camera" size={24} color={tc("#FF6B81", 'fg')} />
             <Text style={styles.quickTitle}>{tr('قبل وبعد')}</Text>
             <Text style={styles.quickSub}>{tr('صوّر تقدمك')}</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.quickTile} onPress={() => navigation.navigate('Achievements')}>
-            <Ionicons name="medal" size={24} color="#FFD700" />
+            <Ionicons name="medal" size={24} color={tc("#FFD700", 'fg')} />
             <Text style={styles.quickTitle}>{tr('إنجازاتك')}</Text>
             <Text style={styles.quickSub}>{tr('بادچات وشهادة')}</Text>
           </TouchableOpacity>
@@ -339,7 +340,7 @@ const HomeScreen = ({ navigation }) => {
             </View>
             <View style={styles.cupsContainer}>
               {[...Array(8)].map((_, i) => (
-                <Ionicons key={i} name={i < filledCups ? 'water' : 'water-outline'} size={26} color={i < filledCups ? WATER_COLOR : '#555'} style={{ marginBottom: 5 }} />
+                <Ionicons key={i} name={i < filledCups ? 'water' : 'water-outline'} size={26} color={i < filledCups ? WATER_COLOR : tc('#555', 'fg')} style={{ marginBottom: 5 }} />
               ))}
             </View>
             <TouchableOpacity
@@ -347,7 +348,7 @@ const HomeScreen = ({ navigation }) => {
               onPress={(e) => { e.stopPropagation(); addWaterCup(); }}
               accessibilityLabel={tr('زوّد كوباية مية')}
             >
-              <Ionicons name="add" size={24} color="#FFF" />
+              <Ionicons name="add" size={24} color={tc("#FFF", 'fg')} />
             </TouchableOpacity>
           </View>
         </TouchableOpacity>
@@ -364,41 +365,41 @@ const HomeScreen = ({ navigation }) => {
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#000000' },
+  container: { flex: 1, backgroundColor: tc('#000000', 'bg') },
   header: { paddingTop: 50, paddingHorizontal: 20, paddingBottom: 15, flexDirection: 'row', alignItems: 'center', gap: 10 },
-  greeting: { fontSize: 24, fontWeight: 'bold', color: '#FFF', textAlign: 'left' },
-  date: { fontSize: 13, color: '#888', fontWeight: '600', marginTop: 4, textAlign: 'left' },
-  streakChip: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#1A1A1A', borderRadius: 20, paddingHorizontal: 12, height: 40, gap: 4, borderWidth: 1, borderColor: '#333' },
-  streakChipText: { color: '#FFF', fontWeight: 'bold', fontSize: 16 },
+  greeting: { fontSize: 24, fontWeight: 'bold', color: tc('#FFF', 'fg'), textAlign: 'left' },
+  date: { fontSize: 13, color: tc('#888', 'fg'), fontWeight: '600', marginTop: 4, textAlign: 'left' },
+  streakChip: { flexDirection: 'row', alignItems: 'center', backgroundColor: tc('#1A1A1A', 'bg'), borderRadius: 20, paddingHorizontal: 12, height: 40, gap: 4, borderWidth: 1, borderColor: tc('#333', 'border') },
+  streakChipText: { color: tc('#FFF', 'fg'), fontWeight: 'bold', fontSize: 16 },
   profileBtn: { padding: 2 },
-  profileImage: { width: 45, height: 45, borderRadius: 25, borderWidth: 1.5, borderColor: '#333', backgroundColor: '#333' },
+  profileImage: { width: 45, height: 45, borderRadius: 25, borderWidth: 1.5, borderColor: tc('#333', 'border'), backgroundColor: tc('#333', 'bg') },
   scrollContent: { paddingHorizontal: 20 },
 
-  reminderCard: { flexDirection: 'row', alignItems: 'flex-start', backgroundColor: '#13261A', borderRadius: 18, padding: 14, marginBottom: 18, borderWidth: 1, borderColor: '#1F4A2C', gap: 12 },
+  reminderCard: { flexDirection: 'row', alignItems: 'flex-start', backgroundColor: tc('#13261A', 'bg'), borderRadius: 18, padding: 14, marginBottom: 18, borderWidth: 1, borderColor: tc('#1F4A2C', 'border'), gap: 12 },
   reminderIcon: { width: 40, height: 40, borderRadius: 20, backgroundColor: MAIN_COLOR, justifyContent: 'center', alignItems: 'center' },
-  reminderTitle: { color: '#FFF', fontSize: 16, fontWeight: 'bold', textAlign: 'left' },
-  reminderText: { color: '#A9C7B2', fontSize: 13, marginTop: 2, textAlign: 'left' },
+  reminderTitle: { color: tc('#FFF', 'fg'), fontSize: 16, fontWeight: 'bold', textAlign: 'left' },
+  reminderText: { color: tc('#A9C7B2', 'fg'), fontSize: 13, marginTop: 2, textAlign: 'left' },
   reminderActions: { flexDirection: 'row', alignItems: 'center', gap: 16, marginTop: 10 },
   reminderBtn: { backgroundColor: MAIN_COLOR, borderRadius: 14, paddingHorizontal: 16, paddingVertical: 7 },
-  reminderBtnText: { color: '#000', fontWeight: 'bold' },
+  reminderBtnText: { color: tc('#000', 'fg'), fontWeight: 'bold' },
   reminderLink: { color: MAIN_COLOR, fontWeight: '600' },
 
-  cycleSetupCard: { backgroundColor: '#2A1218', borderColor: '#5A2533' },
-  cycleCard: { flexDirection: 'row', alignItems: 'flex-start', gap: 12, backgroundColor: '#141414', borderRadius: 18, padding: 14, marginBottom: 18, borderWidth: 1 },
+  cycleSetupCard: { backgroundColor: tc('#2A1218', 'bg'), borderColor: tc('#5A2533', 'border') },
+  cycleCard: { flexDirection: 'row', alignItems: 'flex-start', gap: 12, backgroundColor: tc('#141414', 'bg'), borderRadius: 18, padding: 14, marginBottom: 18, borderWidth: 1 },
   cycleIcon: { width: 40, height: 40, borderRadius: 20, justifyContent: 'center', alignItems: 'center' },
   cycleTitle: { fontSize: 15, fontWeight: 'bold', textAlign: 'left' },
-  cycleText: { color: '#BBB', fontSize: 13, marginTop: 3, lineHeight: 19, textAlign: 'left' },
-  cycleBtn: { alignSelf: 'flex-start', backgroundColor: '#FF6B81', borderRadius: 14, paddingHorizontal: 14, paddingVertical: 6, marginTop: 10 },
-  cycleBtnText: { color: '#000', fontWeight: 'bold', fontSize: 13 },
+  cycleText: { color: tc('#BBB', 'fg'), fontSize: 13, marginTop: 3, lineHeight: 19, textAlign: 'left' },
+  cycleBtn: { alignSelf: 'flex-start', backgroundColor: tc('#FF6B81', 'bg'), borderRadius: 14, paddingHorizontal: 14, paddingVertical: 6, marginTop: 10 },
+  cycleBtnText: { color: tc('#000', 'fg'), fontWeight: 'bold', fontSize: 13 },
   statsContainer: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 20 },
-  statCard: { width: '48%', backgroundColor: '#1A1A1A', borderRadius: 15, padding: 15, flexDirection: 'row', alignItems: 'center', borderWidth: 1, borderColor: '#333' },
-  iconBg: { width: 40, height: 40, borderRadius: 10, backgroundColor: 'rgba(231, 76, 60, 0.2)', justifyContent: 'center', alignItems: 'center', marginRight: 10 },
-  statValue: { fontSize: 18, fontWeight: 'bold', color: '#FFF', textAlign: 'left' },
-  statLabel: { fontSize: 12, color: '#888', textAlign: 'left' },
+  statCard: { width: '48%', backgroundColor: tc('#1A1A1A', 'bg'), borderRadius: 15, padding: 15, flexDirection: 'row', alignItems: 'center', borderWidth: 1, borderColor: tc('#333', 'border') },
+  iconBg: { width: 40, height: 40, borderRadius: 10, backgroundColor: tc('rgba(231, 76, 60, 0.2)', 'bg'), justifyContent: 'center', alignItems: 'center', marginRight: 10 },
+  statValue: { fontSize: 18, fontWeight: 'bold', color: tc('#FFF', 'fg'), textAlign: 'left' },
+  statLabel: { fontSize: 12, color: tc('#888', 'fg'), textAlign: 'left' },
   sectionRow: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 },
-  sectionTitle: { fontSize: 18, fontWeight: 'bold', color: '#FFF', marginBottom: 12, textAlign: 'left' },
+  sectionTitle: { fontSize: 18, fontWeight: 'bold', color: tc('#FFF', 'fg'), marginBottom: 12, textAlign: 'left' },
   doneTodayChip: { flexDirection: 'row', alignItems: 'center', backgroundColor: MAIN_COLOR, borderRadius: 10, paddingHorizontal: 8, paddingVertical: 3, gap: 4, marginBottom: 12 },
-  doneTodayText: { color: '#000', fontSize: 12, fontWeight: 'bold' },
+  doneTodayText: { color: tc('#000', 'fg'), fontSize: 12, fontWeight: 'bold' },
 
   workoutCard: { width: '100%', height: 200, borderRadius: 20, marginBottom: 16, justifyContent: 'flex-end' },
   finishedCard: { justifyContent: 'center', alignItems: 'center', gap: 6, height: undefined, minHeight: 200, padding: 18 },
@@ -423,14 +424,14 @@ const styles = StyleSheet.create({
   playButton: { width: 50, height: 50, borderRadius: 25, backgroundColor: MAIN_COLOR, justifyContent: 'center', alignItems: 'center' },
 
   quickRow: { flexDirection: 'row', gap: 12, marginBottom: 25 },
-  quickTile: { flex: 1, backgroundColor: '#1A1A1A', borderRadius: 18, padding: 16, borderWidth: 1, borderColor: '#2A2A2A' },
-  quickTitle: { color: '#FFF', fontSize: 16, fontWeight: 'bold', marginTop: 10, textAlign: 'left' },
-  quickSub: { color: '#888', fontSize: 12, marginTop: 2, textAlign: 'left' },
+  quickTile: { flex: 1, backgroundColor: tc('#1A1A1A', 'bg'), borderRadius: 18, padding: 16, borderWidth: 1, borderColor: tc('#2A2A2A', 'border') },
+  quickTitle: { color: tc('#FFF', 'fg'), fontSize: 16, fontWeight: 'bold', marginTop: 10, textAlign: 'left' },
+  quickSub: { color: tc('#888', 'fg'), fontSize: 12, marginTop: 2, textAlign: 'left' },
 
-  waterContainer: { backgroundColor: '#1A1A1A', borderRadius: 20, padding: 20, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
+  waterContainer: { backgroundColor: tc('#1A1A1A', 'bg'), borderRadius: 20, padding: 20, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
   waterInfo: { alignItems: 'center' },
   waterValue: { fontSize: 24, fontWeight: 'bold', color: WATER_COLOR },
-  waterLabel: { fontSize: 12, color: '#888' },
+  waterLabel: { fontSize: 12, color: tc('#888', 'fg') },
   cupsContainer: { flex: 1, flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', gap: 5, paddingHorizontal: 10 },
   addWaterBtn: { width: 40, height: 40, borderRadius: 20, backgroundColor: WATER_COLOR, justifyContent: 'center', alignItems: 'center' },
 

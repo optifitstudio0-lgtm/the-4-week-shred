@@ -1,7 +1,7 @@
 {
   "name": "the-4-week-shred",
   "version": "1.8.0",
-  "main": "expo/AppEntry",
+  "main": "entry.js",
   "private": true,
   "scripts": {
     "start": "expo start",

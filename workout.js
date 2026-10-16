@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
+import { tc, statusStyle } from './theme';
 import { View, Text, StyleSheet, ImageBackground, TouchableOpacity, ScrollView, Image, Alert, Animated, Easing, BackHandler, Modal, Pressable, PanResponder, useWindowDimensions } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { StatusBar } from 'expo-status-bar';
@@ -8,7 +9,7 @@ import { useFocusEffect } from '@react-navigation/native';
 
 import { WORKOUT_PLAN, EXERCISE_LIBRARY } from './exercisesdata';
 import { getWorkoutPrefs, markDayComplete, markMiniWorkout, getCompletedDays, getStreak, getRound } from './progressstore';
-import { scaleForRound, restForRound, roundLabel } from './rounds';
+import { scaleForRound, restForRound, roundLabel, normalizeLevel, levelInfo, DEFAULT_LEVEL } from './rounds';
 import { adaptForPain, getPainAreas, savePainAreas, painLabel, buildMini, estimateMinutes } from './pain';
 import { getCycleInfo, isLightOverridden, overrideLightToday, softenForCycle } from './cycle';
 import PainSheet from './painsheet';
@@ -20,14 +21,14 @@ import { getIsPro, isDayPro } from './pro';
 import { prepareInterstitial, showInterstitial } from './ads';
 import { tr } from './i18n';
 
-const MAIN_COLOR = '#2ECC71';
-const REST_COLOR = '#3498DB';
+const MAIN_COLOR = tc('#2ECC71', 'fg');
+const REST_COLOR = tc('#3498DB', 'fg');
 
 // ================= فيديو التمرين (لوب، من غير صوت) =================
 // - الفيديو بيتعرض كامل (contain) من غير قص، عشان التمرين يبان كله والجودة متبوظش من التكبير
 // - الأزرار فوق الفيديو مش عليه
 // - دوسة على الفيديو = شاشة كاملة بالعرض + تكبير بصباعين (دوستين = يرجع زي ما كان)
-const VIDEO_BG = '#FDFDFD'; // نفس خلفية الفيديوهات عشان الحواف متبانش
+const VIDEO_BG = tc('#FDFDFD', 'bg'); // نفس خلفية الفيديوهات عشان الحواف متبانش
 
 const usePlayer = (source, paused) => {
   const player = useVideoPlayer(source || null, (p) => {
@@ -132,13 +133,13 @@ const FullscreenVideo = ({ exercise, onClose }) => {
         </View>
         <View style={styles.fsBar} pointerEvents="box-none">
           <TouchableOpacity style={styles.roundIcon} onPress={onClose} accessibilityLabel={tr('قفل')}>
-            <Ionicons name="close" size={26} color="#FFF" />
+            <Ionicons name="close" size={26} color={"#FFF"} />
           </TouchableOpacity>
           <TouchableOpacity style={styles.roundIcon} onPress={() => { reset(); setLandscape((v) => !v); }}>
-            <Ionicons name="phone-landscape-outline" size={22} color="#FFF" />
+            <Ionicons name="phone-landscape-outline" size={22} color={"#FFF"} />
           </TouchableOpacity>
           <TouchableOpacity style={styles.roundIcon} onPress={reset}>
-            <Ionicons name="contract-outline" size={22} color="#FFF" />
+            <Ionicons name="contract-outline" size={22} color={"#FFF"} />
           </TouchableOpacity>
         </View>
         <Text style={styles.fsHint} pointerEvents="none">{tr('كبّر بصباعين، ودوستين عشان يرجع')}</Text>
@@ -174,7 +175,7 @@ const ExerciseMedia = ({ exercise, paused, style, children }) => {
       <Pressable style={styles.videoArea} onPress={() => setFull(true)}>
         <VideoView player={player} style={StyleSheet.absoluteFill} contentFit="contain" nativeControls={false} />
         <View style={styles.expandBtn} pointerEvents="none">
-          <Ionicons name="expand" size={20} color="#FFF" />
+          <Ionicons name="expand" size={20} color={"#FFF"} />
         </View>
       </Pressable>
       {full && <FullscreenVideo exercise={exercise} onClose={() => setFull(false)} />}
@@ -208,6 +209,8 @@ const WorkoutScreen = ({ route, navigation }) => {
   const currentPlan = WORKOUT_PLAN[dayId] || WORKOUT_PLAN[1];
   // الجولة 2 وبعدها: نفس الخطة بس أصعب (rounds.js)
   const [round, setRound] = useState(1);
+  // مستوى التمرين (مبتدئ / متوسط / متقدم) من الإعدادات
+  const [level, setLevel] = useState(DEFAULT_LEVEL);
 
   const baseList = useMemo(
     () =>
@@ -219,9 +222,10 @@ const WorkoutScreen = ({ route, navigation }) => {
             return { ...libData, ...item };
           })
           .filter(Boolean),
-        round
+        round,
+        level
       ),
-    [dayId, round]
+    [dayId, round, level]
   );
 
   // phase: overview | ready | exercise | rest | done
@@ -243,7 +247,7 @@ const WorkoutScreen = ({ route, navigation }) => {
 
   // الدورة: أيام الدورة وقبلها التمرين أخف 25% والراحة +10 ث (إلا لو قالت "أنا كويسة")
   const cycleLight = !!cycle?.light && !cycleNormal && !currentPlan.isRest;
-  const roundRest = restForRound(prefs.restSec, round);
+  const roundRest = restForRound(prefs.restSec, round, level);
   const restSec = roundRest > 0 && cycleLight ? roundRest + 10 : roundRest;
   const buildList = (areas, m) => {
     let l = adaptForPain(baseList, areas);
@@ -270,6 +274,7 @@ const WorkoutScreen = ({ route, navigation }) => {
       }
       const p = await getWorkoutPrefs();
       setPrefs(p);
+      setLevel(normalizeLevel(p.level));
       setVoiceOn(p.voice);
       setVoiceEnabled(p.voice);
       prepareVoice();
@@ -432,11 +437,11 @@ const WorkoutScreen = ({ route, navigation }) => {
     const isMini = !!result?.mini;
     return (
       <View style={styles.doneContainer}>
-        <StatusBar style="light" />
-        <LinearGradient colors={['rgba(46,204,113,0.35)', 'transparent']} style={styles.doneGlow} pointerEvents="none" />
+        <StatusBar style={statusStyle()} />
+        <LinearGradient colors={[tc('rgba(46,204,113,0.35)', 'bg'), 'transparent']} style={styles.doneGlow} pointerEvents="none" />
         <ScrollView contentContainerStyle={styles.doneContent} showsVerticalScrollIndicator={false}>
           <View style={styles.trophyCircle}>
-            <Ionicons name={finishedAll ? 'ribbon' : 'trophy'} size={64} color="#FFD700" />
+            <Ionicons name={finishedAll ? 'ribbon' : 'trophy'} size={64} color={tc("#FFD700", 'fg')} />
           </View>
           <Text style={styles.doneTitle}>{finishedAll ? (result?.round > 1 ? tr('خلّصت الجولة {0}! 🏆', result.round) : tr('خلّصت الـ4 أسابيع! 🏆')) : isMini ? tr('الستريك اتحفظ 🔥') : tr('برافو يا بطل! 💪')}</Text>
           <Text style={styles.doneSub}>
@@ -449,7 +454,7 @@ const WorkoutScreen = ({ route, navigation }) => {
 
           <View style={styles.doneStatsRow}>
             <View style={styles.doneStat}>
-              <Ionicons name="flame" size={26} color="#E74C3C" />
+              <Ionicons name="flame" size={26} color={tc("#E74C3C", 'fg')} />
               <Text style={styles.doneStatValue}>{stats.streak || 1}</Text>
               <Text style={styles.doneStatLabel}>{tr('أيام ستريك')}</Text>
             </View>
@@ -473,7 +478,7 @@ const WorkoutScreen = ({ route, navigation }) => {
               {badges.map((b) => (
                 <View key={b.id} style={styles.newBadgeRow}>
                   <View style={[styles.newBadgeIcon, { backgroundColor: b.color }]}>
-                    <Ionicons name={b.icon} size={20} color="#000" />
+                    <Ionicons name={b.icon} size={20} color={tc("#000", 'fg')} />
                   </View>
                   <View style={{ flex: 1 }}>
                     <Text style={styles.newBadgeName}>{b.title}</Text>
@@ -488,7 +493,7 @@ const WorkoutScreen = ({ route, navigation }) => {
             style={styles.primaryBtn}
             onPress={() => leaveDone(() => navigation.replace('Achievements', finishedAll ? { showCertificate: true } : {}))}
           >
-            <Ionicons name={finishedAll ? 'ribbon' : 'medal'} size={22} color="#000" />
+            <Ionicons name={finishedAll ? 'ribbon' : 'medal'} size={22} color={tc("#000", 'fg')} />
             <Text style={styles.primaryBtnText}>{finishedAll ? tr('شوف شهادتك وشيّرها') : tr('شوف إنجازاتك')}</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.ghostBtn} onPress={() => leaveDone(() => navigation.goBack())}>
@@ -503,10 +508,10 @@ const WorkoutScreen = ({ route, navigation }) => {
   if (phase === 'ready') {
     return (
       <View style={styles.readyContainer}>
-        <StatusBar style="light" />
+        <StatusBar style={statusStyle()} />
         <ImageBackground source={current.image} style={StyleSheet.absoluteFill} imageStyle={{ opacity: 0.25 }} />
         <TouchableOpacity style={styles.topClose} onPress={confirmQuit}>
-          <Ionicons name="close" size={28} color="#FFF" />
+          <Ionicons name="close" size={28} color={"#FFF"} />
         </TouchableOpacity>
         <Text style={styles.readyLabel}>{tr('استعد')}</Text>
         <PulseNumber value={remaining} color={MAIN_COLOR} size={140} />
@@ -523,20 +528,20 @@ const WorkoutScreen = ({ route, navigation }) => {
     const pct = (remaining / phaseTotal) * 100;
     return (
       <View style={styles.restContainer}>
-        <StatusBar style="light" />
+        <StatusBar style={statusStyle()} />
         <View style={styles.restTopBar}>
           <TouchableOpacity onPress={toggleVoice} style={styles.roundIcon}>
-            <Ionicons name={voiceOn ? 'volume-high' : 'volume-mute'} size={22} color="#FFF" />
+            <Ionicons name={voiceOn ? 'volume-high' : 'volume-mute'} size={22} color={"#FFF"} />
           </TouchableOpacity>
           <Text style={styles.restProgress}>{index + 1} / {exercisesList.length}</Text>
           <TouchableOpacity onPress={confirmQuit} style={styles.roundIcon}>
-            <Ionicons name="close" size={24} color="#FFF" />
+            <Ionicons name="close" size={24} color={"#FFF"} />
           </TouchableOpacity>
         </View>
 
         <View style={styles.restCenter}>
           <Text style={styles.restLabel}>{tr('راحة')}</Text>
-          <PulseNumber value={remaining} color={remaining <= 3 ? '#F1C40F' : REST_COLOR} size={120} />
+          <PulseNumber value={remaining} color={remaining <= 3 ? tc('#F1C40F', 'fg') : REST_COLOR} size={120} />
           <View style={styles.restTrack}>
             <View style={[styles.restFill, { width: `${pct}%` }]} />
           </View>
@@ -546,11 +551,11 @@ const WorkoutScreen = ({ route, navigation }) => {
               <Text style={styles.restBtnText}>{tr('+10 ث')}</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.restBtn} onPress={() => setPaused((p) => !p)}>
-              <Ionicons name={paused ? 'play' : 'pause'} size={20} color="#FFF" />
+              <Ionicons name={paused ? 'play' : 'pause'} size={20} color={tc("#FFF", 'fg')} />
             </TouchableOpacity>
             <TouchableOpacity style={[styles.restBtn, styles.restSkip]} onPress={() => beginExercise(index + 1)}>
-              <Text style={[styles.restBtnText, { color: '#000' }]}>{tr('تخطّي')}</Text>
-              <Ionicons name="play-skip-forward" size={18} color="#000" style={{ transform: [{ scaleX: isRTL ? -1 : 1 }] }} />
+              <Text style={[styles.restBtnText, { color: tc('#000', 'fg') }]}>{tr('تخطّي')}</Text>
+              <Ionicons name="play-skip-forward" size={18} color={tc("#000", 'fg')} style={{ transform: [{ scaleX: isRTL ? -1 : 1 }] }} />
             </TouchableOpacity>
           </View>
         </View>
@@ -573,18 +578,18 @@ const WorkoutScreen = ({ route, navigation }) => {
     const isTime = current.type === 'time';
     return (
       <View style={styles.activeContainer}>
-        <StatusBar style="light" />
+        <StatusBar style={statusStyle()} />
         <ExerciseMedia key={`${current.id}-${index}`} exercise={current} paused={paused} style={styles.activeImage}>
           <View style={styles.mediaTopRow}>
             <TouchableOpacity style={styles.roundIcon} onPress={toggleVoice}>
-              <Ionicons name={voiceOn ? 'volume-high' : 'volume-mute'} size={22} color="#FFF" />
+              <Ionicons name={voiceOn ? 'volume-high' : 'volume-mute'} size={22} color={"#FFF"} />
             </TouchableOpacity>
             <TouchableOpacity style={styles.painPill} onPress={openPain}>
-              <Ionicons name="bandage" size={18} color="#FFF" />
+              <Ionicons name="bandage" size={18} color={"#FFF"} />
               <Text style={styles.painPillText}>{tr('بيوجعني')}</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.roundIcon} onPress={confirmQuit}>
-              <Ionicons name="close" size={26} color="#FFF" />
+              <Ionicons name="close" size={26} color={"#FFF"} />
             </TouchableOpacity>
           </View>
         </ExerciseMedia>
@@ -595,7 +600,7 @@ const WorkoutScreen = ({ route, navigation }) => {
             {!!current.swappedFrom && <Text style={styles.swapNote}>{tr('بديل آمن لـ {0}', current.swappedFrom)}</Text>}
           </View>
           {isTime ? (
-            <Text style={[styles.activeTimer, remaining <= 3 && { color: '#F1C40F' }]}>{formatClock(remaining)}</Text>
+            <Text style={[styles.activeTimer, remaining <= 3 && { color: tc('#F1C40F', 'fg') }]}>{formatClock(remaining)}</Text>
           ) : (
             <Text style={styles.activeTimer}>{current.duration}</Text>
           )}
@@ -614,11 +619,11 @@ const WorkoutScreen = ({ route, navigation }) => {
               onPress={() => setPaused((p) => !p)}
               disabled={!isTime}
             >
-              <Ionicons name={paused ? 'play' : 'pause'} size={28} color="#FFF" />
+              <Ionicons name={paused ? 'play' : 'pause'} size={28} color={tc("#FFF", 'fg')} />
             </TouchableOpacity>
             <TouchableOpacity style={styles.nextBtn} onPress={goNext}>
               <Text style={styles.nextBtnText}>{isLast ? tr('إنهاء') : isTime ? tr('التالي') : tr('خلّصت')}</Text>
-              <Ionicons name={isLast ? 'checkmark' : ICON.next} size={24} color="#000" />
+              <Ionicons name={isLast ? 'checkmark' : ICON.next} size={24} color={tc("#000", 'fg')} />
             </TouchableOpacity>
           </View>
         </View>
@@ -630,10 +635,10 @@ const WorkoutScreen = ({ route, navigation }) => {
   // ================= صفحة تفاصيل اليوم =================
   return (
     <View style={styles.container}>
-      <StatusBar style="light" />
+      <StatusBar style={statusStyle()} />
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backBtn}>
-          <Ionicons name={ICON.back} size={28} color="#FFF" />
+          <Ionicons name={ICON.back} size={28} color={tc("#FFF", 'fg')} />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>{tr('تفاصيل التمرين')}</Text>
         <View style={{ width: 40 }} />
@@ -644,7 +649,7 @@ const WorkoutScreen = ({ route, navigation }) => {
           <Image source={exercisesList[Math.min(2, exercisesList.length - 1)]?.image} style={styles.coverImage} />
           <View style={styles.coverOverlay}>
             <TouchableOpacity style={styles.playButtonMain} onPress={handleStartWorkout}>
-              <Ionicons name="play" size={32} color="#000" />
+              <Ionicons name="play" size={32} color={tc("#000", 'fg')} />
             </TouchableOpacity>
             <Text style={styles.startText}>{mode === 'mini' ? tr('ابدأ نسخة الـ7 دقايق') : alreadyDone ? tr('عيد التمرين') : tr('ابدأ التمرين')}</Text>
           </View>
@@ -656,14 +661,14 @@ const WorkoutScreen = ({ route, navigation }) => {
               <Text style={styles.dayBadge}>{tr('اليوم ')}{dayId}</Text>
               {alreadyDone && (
                 <View style={styles.doneChip}>
-                  <Ionicons name="checkmark-circle" size={14} color="#000" />
+                  <Ionicons name="checkmark-circle" size={14} color={tc("#000", 'fg')} />
                   <Text style={styles.doneChipText}>{tr('مكتمل')}</Text>
                 </View>
               )}
             </View>
             <Text style={styles.mainTitle}>{currentPlan.title}</Text>
             <Text style={styles.subTitle}>
-              {round > 1 ? `${roundLabel(round)} • ` : ''}{currentPlan.level} • {exercisesList.length}{tr(' تمارين • ')}{mode === 'mini' ? tr('{0} دقيقة', estimateMinutes(exercisesList, restSec)) : currentPlan.duration}
+              {round > 1 ? `${roundLabel(round)} • ` : ''}{level !== DEFAULT_LEVEL ? `${levelInfo(level).label} • ` : ''}{currentPlan.level} • {exercisesList.length}{tr(' تمارين • ')}{mode === 'mini' ? tr('{0} دقيقة', estimateMinutes(exercisesList, restSec)) : currentPlan.duration}
             </Text>
           </View>
 
@@ -693,10 +698,10 @@ const WorkoutScreen = ({ route, navigation }) => {
           )}
 
           {painAreas.length > 0 && !currentPlan.isRest && (
-            <View style={[styles.infoCard, { borderColor: 'rgba(255,107,129,0.35)' }]}>
+            <View style={[styles.infoCard, { borderColor: tc('rgba(255,107,129,0.35)', 'border') }]}>
               <View style={styles.infoHead}>
-                <Ionicons name="bandage" size={18} color="#FF6B81" />
-                <Text style={[styles.infoTitle, { color: '#FF6B81' }]}>{tr('التمارين متظبطة عشان: {0}', painLabel(painAreas))}</Text>
+                <Ionicons name="bandage" size={18} color={tc("#FF6B81", 'fg')} />
+                <Text style={[styles.infoTitle, { color: tc('#FF6B81', 'fg') }]}>{tr('التمارين متظبطة عشان: {0}', painLabel(painAreas))}</Text>
               </View>
               <Text style={styles.infoText}>{tr('أي تمرين بيضغط على المكان ده اتبدّل ببديل آمن.')}</Text>
               <View style={styles.infoActions}>
@@ -710,14 +715,14 @@ const WorkoutScreen = ({ route, navigation }) => {
             <View style={styles.toolsRow}>
               {painAreas.length === 0 && (
                 <TouchableOpacity style={styles.toolBtn} onPress={openPain}>
-                  <Ionicons name="bandage" size={18} color="#FF6B81" />
+                  <Ionicons name="bandage" size={18} color={tc("#FF6B81", 'fg')} />
                   <Text style={styles.toolText}>{tr('حاجة بتوجعك؟')}</Text>
                 </TouchableOpacity>
               )}
               {canMini && (
                 <TouchableOpacity style={[styles.toolBtn, mode === 'mini' && styles.toolBtnOn]} onPress={() => setMode(mode === 'mini' ? 'full' : 'mini')}>
-                  <Ionicons name={mode === 'mini' ? 'arrow-undo' : 'flash'} size={18} color={mode === 'mini' ? '#000' : '#F1C40F'} />
-                  <Text style={[styles.toolText, mode === 'mini' && { color: '#000' }]}>{mode === 'mini' ? tr('رجّع التمرين الكامل') : tr('تعبان؟ نسخة 7 دقايق')}</Text>
+                  <Ionicons name={mode === 'mini' ? 'arrow-undo' : 'flash'} size={18} color={mode === 'mini' ? tc('#000', 'fg') : tc('#F1C40F', 'fg')} />
+                  <Text style={[styles.toolText, mode === 'mini' && { color: tc('#000', 'fg') }]}>{mode === 'mini' ? tr('رجّع التمرين الكامل') : tr('تعبان؟ نسخة 7 دقايق')}</Text>
                 </TouchableOpacity>
               )}
             </View>
@@ -750,125 +755,125 @@ const WorkoutScreen = ({ route, navigation }) => {
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#000' },
-  header: { paddingTop: 30, paddingBottom: 20, paddingHorizontal: 20, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', backgroundColor: '#111', borderBottomWidth: 1, borderBottomColor: '#222' },
-  headerTitle: { fontSize: 22, fontWeight: 'bold', color: '#FFF', textAlign: 'center', flex: 1 },
+  container: { flex: 1, backgroundColor: tc('#000', 'bg') },
+  header: { paddingTop: 30, paddingBottom: 20, paddingHorizontal: 20, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', backgroundColor: tc('#111', 'bg'), borderBottomWidth: 1, borderBottomColor: tc('#222', 'border') },
+  headerTitle: { fontSize: 22, fontWeight: 'bold', color: tc('#FFF', 'fg'), textAlign: 'center', flex: 1 },
   backBtn: { width: 40, alignItems: 'flex-start' },
 
   coverContainer: { width: '100%', height: 250 },
   coverImage: { width: '100%', height: '100%', opacity: 0.7 },
-  coverOverlay: { ...StyleSheet.absoluteFillObject, justifyContent: 'center', alignItems: 'center', backgroundColor: 'rgba(0,0,0,0.2)' },
-  playButtonMain: { width: 70, height: 70, borderRadius: 35, backgroundColor: '#FFF', justifyContent: 'center', alignItems: 'center', marginBottom: 10, elevation: 10 },
-  startText: { color: '#FFF', fontSize: 16, fontWeight: 'bold', textShadowColor: 'rgba(0,0,0,0.5)', textShadowRadius: 5 },
+  coverOverlay: { ...StyleSheet.absoluteFillObject, justifyContent: 'center', alignItems: 'center', backgroundColor: tc('rgba(0,0,0,0.2)', 'bg') },
+  playButtonMain: { width: 70, height: 70, borderRadius: 35, backgroundColor: tc('#FFF', 'bg'), justifyContent: 'center', alignItems: 'center', marginBottom: 10, elevation: 10 },
+  startText: { color: tc('#FFF', 'fg'), fontSize: 16, fontWeight: 'bold', textShadowColor: tc('rgba(0,0,0,0.5)', 'shadow'), textShadowRadius: 5 },
 
   contentPadding: { padding: 20 },
   headerInfo: { marginBottom: 16 },
   badgeRow: { flexDirection: 'row', alignItems: 'center', marginBottom: 5 },
   dayBadge: { color: MAIN_COLOR, fontSize: 14, fontWeight: 'bold' },
   doneChip: { flexDirection: 'row', alignItems: 'center', backgroundColor: MAIN_COLOR, borderRadius: 10, paddingHorizontal: 8, paddingVertical: 2, marginLeft: 10, gap: 4 },
-  doneChipText: { color: '#000', fontSize: 12, fontWeight: 'bold' },
-  mainTitle: { fontSize: 24, fontWeight: 'bold', color: '#FFF', marginBottom: 5, textAlign: 'left' },
-  subTitle: { fontSize: 14, color: '#AAA', textAlign: 'left' },
-  restInfo: { flexDirection: 'row', alignItems: 'center', backgroundColor: 'rgba(52,152,219,0.1)', borderRadius: 12, padding: 12, marginBottom: 20, gap: 8 },
-  restInfoText: { color: '#BBB', fontSize: 13, flex: 1, textAlign: 'left' },
+  doneChipText: { color: tc('#000', 'fg'), fontSize: 12, fontWeight: 'bold' },
+  mainTitle: { fontSize: 24, fontWeight: 'bold', color: tc('#FFF', 'fg'), marginBottom: 5, textAlign: 'left' },
+  subTitle: { fontSize: 14, color: tc('#AAA', 'fg'), textAlign: 'left' },
+  restInfo: { flexDirection: 'row', alignItems: 'center', backgroundColor: tc('rgba(52,152,219,0.1)', 'bg'), borderRadius: 12, padding: 12, marginBottom: 20, gap: 8 },
+  restInfoText: { color: tc('#BBB', 'fg'), fontSize: 13, flex: 1, textAlign: 'left' },
   restInfoLink: { color: REST_COLOR, fontWeight: 'bold', fontSize: 13 },
-  divider: { height: 1, backgroundColor: '#222', marginBottom: 20 },
-  sectionHeader: { fontSize: 18, color: '#FFF', fontWeight: 'bold', marginBottom: 15, textAlign: 'left' },
-  exerciseCard: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#151515', padding: 10, borderRadius: 15, marginBottom: 15, borderWidth: 1, borderColor: '#222' },
-  exerciseThumb: { width: 70, height: 70, borderRadius: 15, marginRight: 15, backgroundColor: '#333' },
+  divider: { height: 1, backgroundColor: tc('#222', 'bg'), marginBottom: 20 },
+  sectionHeader: { fontSize: 18, color: tc('#FFF', 'fg'), fontWeight: 'bold', marginBottom: 15, textAlign: 'left' },
+  exerciseCard: { flexDirection: 'row', alignItems: 'center', backgroundColor: tc('#151515', 'bg'), padding: 10, borderRadius: 15, marginBottom: 15, borderWidth: 1, borderColor: tc('#222', 'border') },
+  exerciseThumb: { width: 70, height: 70, borderRadius: 15, marginRight: 15, backgroundColor: tc('#333', 'bg') },
   exerciseInfo: { flex: 1 },
-  exerciseName: { fontSize: 16, fontWeight: 'bold', color: '#FFF', marginBottom: 6, textAlign: 'left' },
-  exerciseReps: { fontSize: 13, color: '#888', fontWeight: '600', textAlign: 'left' },
-  playIconSmall: { width: 35, height: 35, borderRadius: 18, backgroundColor: 'rgba(46, 204, 113, 0.1)', justifyContent: 'center', alignItems: 'center' },
+  exerciseName: { fontSize: 16, fontWeight: 'bold', color: tc('#FFF', 'fg'), marginBottom: 6, textAlign: 'left' },
+  exerciseReps: { fontSize: 13, color: tc('#888', 'fg'), fontWeight: '600', textAlign: 'left' },
+  playIconSmall: { width: 35, height: 35, borderRadius: 18, backgroundColor: tc('rgba(46, 204, 113, 0.1)', 'bg'), justifyContent: 'center', alignItems: 'center' },
 
   // --- التمرين شغال ---
-  activeContainer: { flex: 1, backgroundColor: '#000' },
+  activeContainer: { flex: 1, backgroundColor: tc('#000', 'bg') },
   activeImage: { width: '100%', height: '55%', justifyContent: 'flex-start' },
   imageGradient: { ...StyleSheet.absoluteFillObject, opacity: 0.3 },
   mediaTopRow: { marginTop: 48, paddingHorizontal: 20, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', zIndex: 2 },
   videoArea: { flex: 1, marginTop: 8, marginBottom: 44 },
   expandBtn: { position: 'absolute', bottom: 8, right: 14, width: 36, height: 36, borderRadius: 18, backgroundColor: 'rgba(0,0,0,0.55)', justifyContent: 'center', alignItems: 'center' },
   fsBar: { position: 'absolute', top: 44, left: 20, right: 20, flexDirection: 'row', justifyContent: 'space-between' },
-  fsHint: { position: 'absolute', bottom: 28, alignSelf: 'center', color: '#666', fontSize: 13, backgroundColor: 'rgba(255,255,255,0.85)', paddingHorizontal: 12, paddingVertical: 6, borderRadius: 12, overflow: 'hidden' },
+  fsHint: { position: 'absolute', bottom: 28, alignSelf: 'center', color: tc('#666', 'fg'), fontSize: 13, backgroundColor: tc('rgba(255,255,255,0.85)', 'bg'), paddingHorizontal: 12, paddingVertical: 6, borderRadius: 12, overflow: 'hidden' },
   roundIcon: { backgroundColor: 'rgba(0,0,0,0.6)', borderRadius: 22, width: 44, height: 44, justifyContent: 'center', alignItems: 'center' },
-  activeControls: { flex: 1, backgroundColor: '#111', borderTopLeftRadius: 35, borderTopRightRadius: 35, marginTop: -40, paddingHorizontal: 30, paddingVertical: 36, alignItems: 'center', justifyContent: 'space-between' },
-  activeTitle: { fontSize: 28, fontWeight: 'bold', color: '#FFF', textAlign: 'center' },
+  activeControls: { flex: 1, backgroundColor: tc('#111', 'bg'), borderTopLeftRadius: 35, borderTopRightRadius: 35, marginTop: -40, paddingHorizontal: 30, paddingVertical: 36, alignItems: 'center', justifyContent: 'space-between' },
+  activeTitle: { fontSize: 28, fontWeight: 'bold', color: tc('#FFF', 'fg'), textAlign: 'center' },
   activeTimer: { fontSize: 70, fontWeight: 'bold', color: MAIN_COLOR, marginVertical: 6 },
-  timerLabel: { fontSize: 14, color: '#666' },
+  timerLabel: { fontSize: 14, color: tc('#666', 'fg') },
   progressContainer: { width: '100%', alignItems: 'center', marginVertical: 16 },
-  progressBar: { width: '100%', height: 8, backgroundColor: '#333', borderRadius: 4, marginBottom: 10, overflow: 'hidden' },
+  progressBar: { width: '100%', height: 8, backgroundColor: tc('#333', 'bg'), borderRadius: 4, marginBottom: 10, overflow: 'hidden' },
   progressFill: { height: '100%', backgroundColor: MAIN_COLOR, borderRadius: 4 },
-  progressText: { color: '#888', fontSize: 14, fontWeight: '600' },
+  progressText: { color: tc('#888', 'fg'), fontSize: 14, fontWeight: '600' },
   controlButtons: { flexDirection: 'row', alignItems: 'center', width: '100%', justifyContent: 'space-between', marginBottom: 10 },
-  controlBtnSmall: { width: 60, height: 60, borderRadius: 30, backgroundColor: '#222', justifyContent: 'center', alignItems: 'center', borderWidth: 1, borderColor: '#333' },
+  controlBtnSmall: { width: 60, height: 60, borderRadius: 30, backgroundColor: tc('#222', 'bg'), justifyContent: 'center', alignItems: 'center', borderWidth: 1, borderColor: tc('#333', 'border') },
   nextBtn: { flex: 1, backgroundColor: MAIN_COLOR, height: 60, borderRadius: 30, flexDirection: 'row', justifyContent: 'center', alignItems: 'center', marginLeft: 20, gap: 10 },
-  nextBtnText: { color: '#000', fontWeight: 'bold', fontSize: 18 },
+  nextBtnText: { color: tc('#000', 'fg'), fontWeight: 'bold', fontSize: 18 },
 
   pulseNumber: { fontWeight: '900', textAlign: 'center' },
 
   // --- بيوجعني / أقل حاجة / الدورة ---
   painPill: { flexDirection: 'row', alignItems: 'center', gap: 6, backgroundColor: 'rgba(255,107,129,0.85)', borderRadius: 22, height: 44, paddingHorizontal: 16 },
   painPillText: { color: '#FFF', fontWeight: 'bold', fontSize: 14 },
-  swapNote: { color: '#FF8FA0', fontSize: 13, fontWeight: '600', marginTop: 4, textAlign: 'center' },
-  swapSmall: { color: '#FF8FA0', fontSize: 12, marginTop: 3, textAlign: 'left' },
-  infoCard: { backgroundColor: '#121212', borderRadius: 14, padding: 12, marginBottom: 12, borderWidth: 1 },
+  swapNote: { color: tc('#FF8FA0', 'fg'), fontSize: 13, fontWeight: '600', marginTop: 4, textAlign: 'center' },
+  swapSmall: { color: tc('#FF8FA0', 'fg'), fontSize: 12, marginTop: 3, textAlign: 'left' },
+  infoCard: { backgroundColor: tc('#121212', 'bg'), borderRadius: 14, padding: 12, marginBottom: 12, borderWidth: 1 },
   infoHead: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   infoTitle: { fontSize: 14, fontWeight: 'bold', flex: 1, textAlign: 'left' },
-  infoText: { color: '#BBB', fontSize: 13, marginTop: 6, lineHeight: 19, textAlign: 'left' },
+  infoText: { color: tc('#BBB', 'fg'), fontSize: 13, marginTop: 6, lineHeight: 19, textAlign: 'left' },
   infoActions: { flexDirection: 'row', gap: 18 },
-  infoLink: { color: '#2ECC71', fontWeight: 'bold', fontSize: 13, marginTop: 8, textAlign: 'left' },
+  infoLink: { color: tc('#2ECC71', 'fg'), fontWeight: 'bold', fontSize: 13, marginTop: 8, textAlign: 'left' },
   toolsRow: { flexDirection: 'row', gap: 10, marginBottom: 12 },
-  toolBtn: { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, backgroundColor: '#161616', borderRadius: 14, paddingVertical: 12, paddingHorizontal: 8, borderWidth: 1, borderColor: '#2A2A2A' },
-  toolBtnOn: { backgroundColor: '#F1C40F', borderColor: '#F1C40F' },
-  toolText: { color: '#FFF', fontWeight: 'bold', fontSize: 13, flexShrink: 1 },
-  miniNote: { color: '#C9B458', fontSize: 12, marginBottom: 12, textAlign: 'left' },
+  toolBtn: { flex: 1, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 6, backgroundColor: tc('#161616', 'bg'), borderRadius: 14, paddingVertical: 12, paddingHorizontal: 8, borderWidth: 1, borderColor: tc('#2A2A2A', 'border') },
+  toolBtnOn: { backgroundColor: tc('#F1C40F', 'bg'), borderColor: tc('#F1C40F', 'border') },
+  toolText: { color: tc('#FFF', 'fg'), fontWeight: 'bold', fontSize: 13, flexShrink: 1 },
+  miniNote: { color: tc('#C9B458', 'fg'), fontSize: 12, marginBottom: 12, textAlign: 'left' },
 
   // --- استعد ---
-  readyContainer: { flex: 1, backgroundColor: '#000', justifyContent: 'center', alignItems: 'center', padding: 30 },
+  readyContainer: { flex: 1, backgroundColor: tc('#000', 'bg'), justifyContent: 'center', alignItems: 'center', padding: 30 },
   topClose: { position: 'absolute', top: 50, left: 20, backgroundColor: 'rgba(0,0,0,0.6)', borderRadius: 22, width: 44, height: 44, justifyContent: 'center', alignItems: 'center' },
-  readyLabel: { color: '#FFF', fontSize: 28, fontWeight: 'bold' },
-  readyFirst: { color: '#BBB', fontSize: 16, marginTop: 10, textAlign: 'center' },
+  readyLabel: { color: tc('#FFF', 'fg'), fontSize: 28, fontWeight: 'bold' },
+  readyFirst: { color: tc('#BBB', 'fg'), fontSize: 16, marginTop: 10, textAlign: 'center' },
 
   // --- الراحة ---
-  restContainer: { flex: 1, backgroundColor: '#05121C', paddingTop: 50, paddingHorizontal: 20, paddingBottom: 30 },
+  restContainer: { flex: 1, backgroundColor: tc('#05121C', 'bg'), paddingTop: 50, paddingHorizontal: 20, paddingBottom: 30 },
   restTopBar: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
-  restProgress: { color: '#7FB3D5', fontWeight: 'bold', fontSize: 15 },
+  restProgress: { color: tc('#7FB3D5', 'fg'), fontWeight: 'bold', fontSize: 15 },
   restCenter: { flex: 1, justifyContent: 'center', alignItems: 'center' },
-  restLabel: { color: '#FFF', fontSize: 30, fontWeight: 'bold', marginBottom: -6 },
-  restTrack: { width: '80%', height: 8, borderRadius: 4, backgroundColor: 'rgba(255,255,255,0.1)', overflow: 'hidden', marginTop: 10 },
+  restLabel: { color: tc('#FFF', 'fg'), fontSize: 30, fontWeight: 'bold', marginBottom: -6 },
+  restTrack: { width: '80%', height: 8, borderRadius: 4, backgroundColor: tc('rgba(255,255,255,0.1)', 'bg'), overflow: 'hidden', marginTop: 10 },
   restFill: { height: '100%', backgroundColor: REST_COLOR, borderRadius: 4 },
   restButtons: { flexDirection: 'row', gap: 12, marginTop: 30 },
-  restBtn: { height: 50, minWidth: 70, paddingHorizontal: 18, borderRadius: 25, backgroundColor: 'rgba(255,255,255,0.1)', justifyContent: 'center', alignItems: 'center', flexDirection: 'row', gap: 6 },
+  restBtn: { height: 50, minWidth: 70, paddingHorizontal: 18, borderRadius: 25, backgroundColor: tc('rgba(255,255,255,0.1)', 'bg'), justifyContent: 'center', alignItems: 'center', flexDirection: 'row', gap: 6 },
   restSkip: { backgroundColor: MAIN_COLOR },
-  restBtnText: { color: '#FFF', fontWeight: 'bold', fontSize: 16 },
-  nextCard: { flexDirection: 'row', alignItems: 'center', backgroundColor: 'rgba(255,255,255,0.06)', borderRadius: 20, padding: 12, gap: 14, borderWidth: 1, borderColor: 'rgba(255,255,255,0.08)' },
-  nextImage: { width: 76, height: 76, borderRadius: 14, backgroundColor: '#222' },
-  nextLabel: { color: '#7FB3D5', fontSize: 13, fontWeight: 'bold', textAlign: 'left' },
-  nextName: { color: '#FFF', fontSize: 18, fontWeight: 'bold', marginTop: 2, textAlign: 'left' },
-  nextMeta: { color: '#AAA', fontSize: 14, marginTop: 2, textAlign: 'left' },
+  restBtnText: { color: tc('#FFF', 'fg'), fontWeight: 'bold', fontSize: 16 },
+  nextCard: { flexDirection: 'row', alignItems: 'center', backgroundColor: tc('rgba(255,255,255,0.06)', 'bg'), borderRadius: 20, padding: 12, gap: 14, borderWidth: 1, borderColor: tc('rgba(255,255,255,0.08)', 'border') },
+  nextImage: { width: 76, height: 76, borderRadius: 14, backgroundColor: tc('#222', 'bg') },
+  nextLabel: { color: tc('#7FB3D5', 'fg'), fontSize: 13, fontWeight: 'bold', textAlign: 'left' },
+  nextName: { color: tc('#FFF', 'fg'), fontSize: 18, fontWeight: 'bold', marginTop: 2, textAlign: 'left' },
+  nextMeta: { color: tc('#AAA', 'fg'), fontSize: 14, marginTop: 2, textAlign: 'left' },
 
   // --- النهاية ---
-  doneContainer: { flex: 1, backgroundColor: '#000' },
+  doneContainer: { flex: 1, backgroundColor: tc('#000', 'bg') },
   doneGlow: { position: 'absolute', top: 0, left: 0, right: 0, height: 360 },
   doneContent: { paddingTop: 80, paddingHorizontal: 24, paddingBottom: 40, alignItems: 'center' },
-  trophyCircle: { width: 120, height: 120, borderRadius: 60, backgroundColor: 'rgba(255,215,0,0.12)', borderWidth: 2, borderColor: 'rgba(255,215,0,0.4)', justifyContent: 'center', alignItems: 'center', marginBottom: 20 },
-  doneTitle: { color: '#FFF', fontSize: 30, fontWeight: '900', textAlign: 'center' },
-  doneSub: { color: '#AAA', fontSize: 16, marginTop: 8, textAlign: 'center' },
+  trophyCircle: { width: 120, height: 120, borderRadius: 60, backgroundColor: tc('rgba(255,215,0,0.12)', 'bg'), borderWidth: 2, borderColor: tc('rgba(255,215,0,0.4)', 'border'), justifyContent: 'center', alignItems: 'center', marginBottom: 20 },
+  doneTitle: { color: tc('#FFF', 'fg'), fontSize: 30, fontWeight: '900', textAlign: 'center' },
+  doneSub: { color: tc('#AAA', 'fg'), fontSize: 16, marginTop: 8, textAlign: 'center' },
   doneStatsRow: { flexDirection: 'row', gap: 10, marginTop: 28, width: '100%' },
-  doneStat: { flex: 1, backgroundColor: '#141414', borderRadius: 18, paddingVertical: 16, alignItems: 'center', borderWidth: 1, borderColor: '#222' },
-  doneStatValue: { color: '#FFF', fontSize: 22, fontWeight: 'bold', marginTop: 6 },
-  doneStatLabel: { color: '#888', fontSize: 12, marginTop: 2 },
-  streakLine: { color: '#F5B041', fontSize: 15, fontWeight: '600', marginTop: 18, textAlign: 'center' },
-  newBadgesBox: { width: '100%', backgroundColor: '#111', borderRadius: 20, padding: 16, marginTop: 22, borderWidth: 1, borderColor: '#2A2A2A' },
-  newBadgesTitle: { color: '#FFF', fontSize: 17, fontWeight: 'bold', marginBottom: 12, textAlign: 'left' },
+  doneStat: { flex: 1, backgroundColor: tc('#141414', 'bg'), borderRadius: 18, paddingVertical: 16, alignItems: 'center', borderWidth: 1, borderColor: tc('#222', 'border') },
+  doneStatValue: { color: tc('#FFF', 'fg'), fontSize: 22, fontWeight: 'bold', marginTop: 6 },
+  doneStatLabel: { color: tc('#888', 'fg'), fontSize: 12, marginTop: 2 },
+  streakLine: { color: tc('#F5B041', 'fg'), fontSize: 15, fontWeight: '600', marginTop: 18, textAlign: 'center' },
+  newBadgesBox: { width: '100%', backgroundColor: tc('#111', 'bg'), borderRadius: 20, padding: 16, marginTop: 22, borderWidth: 1, borderColor: tc('#2A2A2A', 'border') },
+  newBadgesTitle: { color: tc('#FFF', 'fg'), fontSize: 17, fontWeight: 'bold', marginBottom: 12, textAlign: 'left' },
   newBadgeRow: { flexDirection: 'row', alignItems: 'center', gap: 12, marginBottom: 10 },
   newBadgeIcon: { width: 40, height: 40, borderRadius: 20, justifyContent: 'center', alignItems: 'center' },
-  newBadgeName: { color: '#FFF', fontWeight: 'bold', fontSize: 15, textAlign: 'left' },
-  newBadgeDesc: { color: '#888', fontSize: 13, textAlign: 'left' },
+  newBadgeName: { color: tc('#FFF', 'fg'), fontWeight: 'bold', fontSize: 15, textAlign: 'left' },
+  newBadgeDesc: { color: tc('#888', 'fg'), fontSize: 13, textAlign: 'left' },
   primaryBtn: { backgroundColor: MAIN_COLOR, height: 58, borderRadius: 29, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 10, alignSelf: 'stretch', marginTop: 28 },
-  primaryBtnText: { color: '#000', fontWeight: 'bold', fontSize: 17 },
+  primaryBtnText: { color: tc('#000', 'fg'), fontWeight: 'bold', fontSize: 17 },
   ghostBtn: { paddingVertical: 16, alignSelf: 'stretch', alignItems: 'center' },
-  ghostBtnText: { color: '#AAA', fontWeight: '600', fontSize: 15 },
+  ghostBtnText: { color: tc('#AAA', 'fg'), fontWeight: '600', fontSize: 15 },
 });
 
 export default WorkoutScreen;

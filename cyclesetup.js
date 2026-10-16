@@ -3,6 +3,7 @@
 // كل البيانات بتفضل على الموبايل بس
 // =========================================================
 import React, { useEffect, useRef, useState } from 'react';
+import { tc, statusStyle } from './theme';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Animated } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { Ionicons } from '@expo/vector-icons';
@@ -13,8 +14,8 @@ import { dateKey, addDays, diffDays, formatDate, daysLabel } from './dates';
 import { ICON, dirX } from './rtl';
 import { tr } from './i18n';
 
-const MAIN_COLOR = '#2ECC71';
-const CYCLE_COLOR = '#FF6B81';
+const MAIN_COLOR = tc('#2ECC71', 'fg');
+const CYCLE_COLOR = tc('#FF6B81', 'fg');
 
 const Switch = ({ value, onChange }) => {
   const anim = useRef(new Animated.Value(value ? 1 : 0)).current;
@@ -22,7 +23,7 @@ const Switch = ({ value, onChange }) => {
     Animated.timing(anim, { toValue: value ? 1 : 0, duration: 200, useNativeDriver: false }).start();
   }, [value]);
   const translateX = anim.interpolate({ inputRange: [0, 1], outputRange: [dirX(2), dirX(22)] });
-  const backgroundColor = anim.interpolate({ inputRange: [0, 1], outputRange: ['#3A3A3C', CYCLE_COLOR] });
+  const backgroundColor = anim.interpolate({ inputRange: [0, 1], outputRange: [tc('#3A3A3C', 'bg'), CYCLE_COLOR] });
   return (
     <TouchableOpacity activeOpacity={1} onPress={() => onChange(!value)} style={{ width: 50, height: 30, justifyContent: 'center' }}>
       <Animated.View style={[styles.track, { backgroundColor }]}>
@@ -38,9 +39,9 @@ const Stepper = ({ label, value, sub, onMinus, onPlus }) => (
       <Text style={styles.stepLabel}>{label}</Text>
       {!!sub && <Text style={styles.stepSub}>{sub}</Text>}
     </View>
-    <TouchableOpacity style={styles.stepBtn} onPress={onMinus}><Ionicons name="remove" size={22} color="#FFF" /></TouchableOpacity>
+    <TouchableOpacity style={styles.stepBtn} onPress={onMinus}><Ionicons name="remove" size={22} color={tc("#FFF", 'fg')} /></TouchableOpacity>
     <Text style={styles.stepValue}>{value}</Text>
-    <TouchableOpacity style={styles.stepBtn} onPress={onPlus}><Ionicons name="add" size={22} color="#FFF" /></TouchableOpacity>
+    <TouchableOpacity style={styles.stepBtn} onPress={onPlus}><Ionicons name="add" size={22} color={tc("#FFF", 'fg')} /></TouchableOpacity>
   </View>
 );
 
@@ -83,10 +84,10 @@ const CycleSetupScreen = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      <StatusBar style="light" />
+      <StatusBar style={statusStyle()} />
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backBtn}>
-          <Ionicons name={ICON.back} size={28} color="#FFF" />
+          <Ionicons name={ICON.back} size={28} color={tc("#FFF", 'fg')} />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>{tr('خطة على حسب دورتك')}</Text>
         <View style={{ width: 40 }} />
@@ -159,7 +160,7 @@ const CycleSetupScreen = ({ navigation }) => {
         )}
 
         <View style={styles.privacy}>
-          <Ionicons name="lock-closed" size={16} color="#888" />
+          <Ionicons name="lock-closed" size={16} color={tc("#888", 'fg')} />
           <Text style={styles.privacyText}>{tr('بياناتك بتفضل على موبايلك بس. ده مش وسيلة لمنع الحمل ولا تشخيص طبي.')}</Text>
         </View>
 
@@ -172,36 +173,36 @@ const CycleSetupScreen = ({ navigation }) => {
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#000' },
-  header: { paddingTop: 30, paddingBottom: 20, paddingHorizontal: 20, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', backgroundColor: '#111', borderBottomWidth: 1, borderBottomColor: '#222' },
-  headerTitle: { fontSize: 20, fontWeight: 'bold', color: '#FFF', textAlign: 'center', flex: 1 },
+  container: { flex: 1, backgroundColor: tc('#000', 'bg') },
+  header: { paddingTop: 30, paddingBottom: 20, paddingHorizontal: 20, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', backgroundColor: tc('#111', 'bg'), borderBottomWidth: 1, borderBottomColor: tc('#222', 'border') },
+  headerTitle: { fontSize: 20, fontWeight: 'bold', color: tc('#FFF', 'fg'), textAlign: 'center', flex: 1 },
   backBtn: { width: 40, alignItems: 'flex-start' },
   content: { padding: 20, paddingBottom: 60 },
-  intro: { color: '#BBB', fontSize: 14, lineHeight: 21, marginBottom: 16, textAlign: 'left' },
-  card: { backgroundColor: '#161616', borderRadius: 18, padding: 14, marginBottom: 14, borderWidth: 1, borderColor: '#262626' },
+  intro: { color: tc('#BBB', 'fg'), fontSize: 14, lineHeight: 21, marginBottom: 16, textAlign: 'left' },
+  card: { backgroundColor: tc('#161616', 'bg'), borderRadius: 18, padding: 14, marginBottom: 14, borderWidth: 1, borderColor: tc('#262626', 'border') },
   switchRow: { flexDirection: 'row', alignItems: 'center', gap: 10 },
-  switchText: { color: '#FFF', fontSize: 16, fontWeight: 'bold', flex: 1, textAlign: 'left' },
+  switchText: { color: tc('#FFF', 'fg'), fontSize: 16, fontWeight: 'bold', flex: 1, textAlign: 'left' },
   track: { width: 50, height: 28, borderRadius: 14, justifyContent: 'center' },
-  knob: { width: 24, height: 24, borderRadius: 12, backgroundColor: '#FFF' },
+  knob: { width: 24, height: 24, borderRadius: 12, backgroundColor: tc('#FFF', 'bg') },
   stepRow: { flexDirection: 'row', alignItems: 'center', gap: 10, paddingVertical: 6 },
-  stepLabel: { color: '#FFF', fontSize: 15, fontWeight: 'bold', textAlign: 'left' },
-  stepSub: { color: '#888', fontSize: 12, marginTop: 2, textAlign: 'left' },
-  stepBtn: { width: 38, height: 38, borderRadius: 19, backgroundColor: '#2A2A2A', justifyContent: 'center', alignItems: 'center' },
+  stepLabel: { color: tc('#FFF', 'fg'), fontSize: 15, fontWeight: 'bold', textAlign: 'left' },
+  stepSub: { color: tc('#888', 'fg'), fontSize: 12, marginTop: 2, textAlign: 'left' },
+  stepBtn: { width: 38, height: 38, borderRadius: 19, backgroundColor: tc('#2A2A2A', 'bg'), justifyContent: 'center', alignItems: 'center' },
   stepValue: { color: CYCLE_COLOR, fontSize: 15, fontWeight: 'bold', minWidth: 64, textAlign: 'center' },
-  sep: { height: 1, backgroundColor: '#242424', marginVertical: 8 },
+  sep: { height: 1, backgroundColor: tc('#242424', 'bg'), marginVertical: 8 },
   phaseHead: { flexDirection: 'row', alignItems: 'center', gap: 8 },
   phaseTitle: { fontSize: 17, fontWeight: 'bold', textAlign: 'left' },
-  phaseSub: { color: '#999', fontSize: 13, marginTop: 4, textAlign: 'left' },
-  phaseHint: { color: '#DDD', fontSize: 14, marginTop: 8, lineHeight: 20, textAlign: 'left' },
-  section: { color: '#FFF', fontSize: 17, fontWeight: 'bold', marginTop: 6, marginBottom: 10, textAlign: 'left' },
+  phaseSub: { color: tc('#999', 'fg'), fontSize: 13, marginTop: 4, textAlign: 'left' },
+  phaseHint: { color: tc('#DDD', 'fg'), fontSize: 14, marginTop: 8, lineHeight: 20, textAlign: 'left' },
+  section: { color: tc('#FFF', 'fg'), fontSize: 17, fontWeight: 'bold', marginTop: 6, marginBottom: 10, textAlign: 'left' },
   effectRow: { flexDirection: 'row', alignItems: 'center', gap: 12, paddingVertical: 10 },
-  effectBorder: { borderTopWidth: 1, borderTopColor: '#242424' },
-  effectTitle: { color: '#FFF', fontSize: 14, fontWeight: 'bold', textAlign: 'left' },
-  effectText: { color: '#999', fontSize: 13, marginTop: 2, textAlign: 'left' },
+  effectBorder: { borderTopWidth: 1, borderTopColor: tc('#242424', 'border') },
+  effectTitle: { color: tc('#FFF', 'fg'), fontSize: 14, fontWeight: 'bold', textAlign: 'left' },
+  effectText: { color: tc('#999', 'fg'), fontSize: 13, marginTop: 2, textAlign: 'left' },
   privacy: { flexDirection: 'row', alignItems: 'center', gap: 8, marginTop: 4, marginBottom: 16 },
-  privacyText: { color: '#888', fontSize: 12, flex: 1, textAlign: 'left' },
+  privacyText: { color: tc('#888', 'fg'), fontSize: 12, flex: 1, textAlign: 'left' },
   saveBtn: { height: 56, borderRadius: 28, backgroundColor: MAIN_COLOR, justifyContent: 'center', alignItems: 'center' },
-  saveText: { color: '#000', fontWeight: 'bold', fontSize: 17 },
+  saveText: { color: tc('#000', 'fg'), fontWeight: 'bold', fontSize: 17 },
 });
 
 export default CycleSetupScreen;

@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
+import { tc, statusStyle } from './theme';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { Ionicons } from '@expo/vector-icons';
 import { tr } from './i18n';
 import AsyncStorage from '@react-native-async-storage/async-storage'; // 👈 استيراد
 
-const MAIN_COLOR = '#2ECC71';
+const MAIN_COLOR = tc('#2ECC71', 'fg');
 
 const activities = [
   { id: 'sedentary', title: tr('نشاط قليل أو مفيش'), subtitle: tr('قاعد أغلب الوقت (شغل مكتب مثلًا)'), icon: 'cafe-outline' },
@@ -27,7 +28,7 @@ const ActivityLevelScreen = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      <StatusBar style="light" />
+      <StatusBar style={statusStyle()} />
       <View style={styles.header}>
         <Text style={styles.title}>{tr('مستوى نشاطك')}</Text>
         <Text style={styles.subtitle}>{tr('عشان نحسب حرقك اليومي، قولنا انت نشيط قد إيه.')}</Text>
@@ -43,7 +44,7 @@ const ActivityLevelScreen = ({ navigation }) => {
               activeOpacity={0.8}
             >
               <View style={styles.iconContainer}>
-                <Ionicons name={item.icon} size={28} color={isSelected ? MAIN_COLOR : '#888'} />
+                <Ionicons name={item.icon} size={28} color={isSelected ? MAIN_COLOR : tc('#888', 'fg')} />
               </View>
               <View style={styles.textWrapper}>
                 <Text style={[styles.cardTitle, isSelected && styles.selectedText]}>{item.title}</Text>
@@ -64,22 +65,22 @@ const ActivityLevelScreen = ({ navigation }) => {
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#000000', paddingHorizontal: 20, paddingVertical: 50 },
+  container: { flex: 1, backgroundColor: tc('#000000', 'bg'), paddingHorizontal: 20, paddingVertical: 50 },
   header: { marginTop: 20, marginBottom: 20, alignItems: 'center' },
-  title: { fontSize: 28, fontWeight: '800', color: '#fff', marginBottom: 10 },
-  subtitle: { fontSize: 16, color: '#888', textAlign: 'center' },
+  title: { fontSize: 28, fontWeight: '800', color: tc('#fff', 'fg'), marginBottom: 10 },
+  subtitle: { fontSize: 16, color: tc('#888', 'fg'), textAlign: 'center' },
   listContainer: { paddingBottom: 20, gap: 15 },
-  card: { backgroundColor: '#1A1A1A', borderRadius: 15, padding: 20, flexDirection: 'row', alignItems: 'center', borderWidth: 2, borderColor: 'transparent' },
-  selectedCard: { borderColor: MAIN_COLOR, backgroundColor: 'rgba(46, 204, 113, 0.05)', shadowColor: MAIN_COLOR, shadowOffset: { width: 0, height: 0 }, shadowOpacity: 0.5, shadowRadius: 10, elevation: 5 },
+  card: { backgroundColor: tc('#1A1A1A', 'bg'), borderRadius: 15, padding: 20, flexDirection: 'row', alignItems: 'center', borderWidth: 2, borderColor: 'transparent' },
+  selectedCard: { borderColor: MAIN_COLOR, backgroundColor: tc('rgba(46, 204, 113, 0.05)', 'bg'), shadowColor: MAIN_COLOR, shadowOffset: { width: 0, height: 0 }, shadowOpacity: 0.5, shadowRadius: 10, elevation: 5 },
   iconContainer: { marginRight: 15 },
   textWrapper: { flex: 1 },
-  cardTitle: { fontSize: 18, fontWeight: 'bold', color: '#DDD', marginBottom: 4, textAlign: 'left' },
-  selectedText: { color: '#fff' },
-  cardSubtitle: { fontSize: 14, color: '#666', textAlign: 'left' },
+  cardTitle: { fontSize: 18, fontWeight: 'bold', color: tc('#DDD', 'fg'), marginBottom: 4, textAlign: 'left' },
+  selectedText: { color: tc('#fff', 'fg') },
+  cardSubtitle: { fontSize: 14, color: tc('#666', 'fg'), textAlign: 'left' },
   footer: { paddingTop: 10, width: '100%', alignItems: 'center' },
   nextButton: { backgroundColor: MAIN_COLOR, width: '100%', height: 55, borderRadius: 30, justifyContent: 'center', alignItems: 'center', shadowColor: MAIN_COLOR, shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 10 },
-  disabledButton: { backgroundColor: '#333', shadowOpacity: 0 },
-  nextButtonText: { color: '#fff', fontSize: 18, fontWeight: 'bold' },
+  disabledButton: { backgroundColor: tc('#333', 'bg'), shadowOpacity: 0 },
+  nextButtonText: { color: tc('#fff', 'fg'), fontSize: 18, fontWeight: 'bold' },
 });
 
 export default ActivityLevelScreen;

@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { tc, statusStyle } from './theme';
 import { 
   View, 
   Text, 
@@ -21,11 +22,11 @@ import { tr } from './i18n';
 
 const { width, height } = Dimensions.get('window');
 
-const MAIN_COLOR = '#2ECC71'; 
-const BG_COLOR = '#000000';     
-const INPUT_BG = '#1A1A1A';     
-const TEXT_COLOR = '#FFFFFF';
-const PLACEHOLDER_COLOR = '#666666';
+const MAIN_COLOR = tc('#2ECC71', 'fg'); 
+const BG_COLOR = tc('#000000', 'bg');     
+const INPUT_BG = tc('#1A1A1A', 'bg');     
+const TEXT_COLOR = tc('#FFFFFF', 'fg');
+const PLACEHOLDER_COLOR = tc('#666666', 'fg');
 
 const ForgotPassword = ({ navigation, route }) => {
   const [email, setEmail] = useState(route?.params?.email || '');
@@ -53,16 +54,16 @@ const ForgotPassword = ({ navigation, route }) => {
 
   return (
     <View style={styles.container}>
-      <StatusBar style="light" />
+      <StatusBar style={statusStyle()} />
 
       {/* ================================================= */}
       {/* تأثير الإضاءة الخضراء الناعمة */}
       {/* ================================================= */}
       <LinearGradient
         colors={[
-          'rgba(46, 204, 113, 0.4)', 
-          'rgba(46, 204, 113, 0.1)', 
-          'rgba(0, 0, 0, 0)'         
+          tc('rgba(46, 204, 113, 0.4)', 'bg'), 
+          tc('rgba(46, 204, 113, 0.1)', 'bg'), 
+          tc('rgba(0, 0, 0, 0)', 'bg')         
         ]} 
         start={{ x: 1, y: 0 }}      
         end={{ x: 0, y: 0.8 }}      
@@ -85,7 +86,7 @@ const ForgotPassword = ({ navigation, route }) => {
                 style={styles.backButton} 
                 onPress={() => navigation.goBack()}
               >
-                <Ionicons name={require('./rtl').ICON.back} size={24} color="#FFF" />
+                <Ionicons name={require('./rtl').ICON.back} size={24} color={tc("#FFF", 'fg')} />
               </TouchableOpacity>
             </View>
 
@@ -103,9 +104,9 @@ const ForgotPassword = ({ navigation, route }) => {
 
             {sentTo ? (
               <View style={styles.formSection}>
-                <View style={{ alignItems: 'center', backgroundColor: '#111', borderRadius: 20, padding: 20, borderWidth: 1, borderColor: '#222', marginBottom: 20 }}>
+                <View style={{ alignItems: 'center', backgroundColor: tc('#111', 'bg'), borderRadius: 20, padding: 20, borderWidth: 1, borderColor: tc('#222', 'border'), marginBottom: 20 }}>
                   <Ionicons name="mail-open-outline" size={40} color={MAIN_COLOR} />
-                  <Text style={{ color: '#DDD', fontSize: 14, textAlign: 'center', lineHeight: 22, marginTop: 10 }}>
+                  <Text style={{ color: tc('#DDD', 'fg'), fontSize: 14, textAlign: 'center', lineHeight: 22, marginTop: 10 }}>
                     {tr('بعتنا لينك على {0}. افتح الإيميل (وبص في الـSpam كمان) واضغط على اللينك عشان تكتب كلمة سر جديدة.', sentTo)}
                   </Text>
                 </View>
@@ -122,7 +123,7 @@ const ForgotPassword = ({ navigation, route }) => {
                 <Ionicons 
                   name="mail" 
                   size={20} 
-                  color={isFocused ? MAIN_COLOR : "#888"} 
+                  color={isFocused ? MAIN_COLOR : tc("#888", 'fg')} 
                   style={styles.inputIcon} 
                 />
                 <TextInput
@@ -146,10 +147,10 @@ const ForgotPassword = ({ navigation, route }) => {
                 onPress={handleSendCode}
                 disabled={sending}
               >
-                {sending ? <ActivityIndicator color="#FFF" /> : (
+                {sending ? <ActivityIndicator color={tc("#FFF", 'fg')} /> : (
                   <>
                     <Text style={styles.primaryButtonText}>{tr('ابعت اللينك')}</Text>
-                    <Ionicons name="paper-plane-outline" size={20} color="#FFF" style={{ marginLeft: 8 }} />
+                    <Ionicons name="paper-plane-outline" size={20} color={tc("#FFF", 'fg')} style={{ marginLeft: 8 }} />
                   </>
                 )}
               </TouchableOpacity>
@@ -196,11 +197,11 @@ const styles = StyleSheet.create({
     width: 45,
     height: 45,
     borderRadius: 22.5,
-    backgroundColor: '#1A1A1A',
+    backgroundColor: tc('#1A1A1A', 'bg'),
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: '#333',
+    borderColor: tc('#333', 'border'),
   },
   headerSection: {
     alignItems: 'center',
@@ -210,10 +211,10 @@ const styles = StyleSheet.create({
   logoContainer: {
     marginBottom: 20,
     padding: 20,
-    backgroundColor: '#111',
+    backgroundColor: tc('#111', 'bg'),
     borderRadius: 60,
     borderWidth: 1,
-    borderColor: '#222',
+    borderColor: tc('#222', 'border'),
     shadowColor: MAIN_COLOR,
     shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 0.2,
@@ -229,7 +230,7 @@ const styles = StyleSheet.create({
   },
   subTitle: {
     fontSize: 14,
-    color: '#888',
+    color: tc('#888', 'fg'),
     textAlign: 'center',
     lineHeight: 22,
     paddingHorizontal: 10,
@@ -247,11 +248,11 @@ const styles = StyleSheet.create({
     height: 60,
     marginBottom: 25,
     borderWidth: 1,
-    borderColor: '#333',
+    borderColor: tc('#333', 'border'),
   },
   inputFocused: {
     borderColor: MAIN_COLOR, 
-    backgroundColor: '#111',
+    backgroundColor: tc('#111', 'bg'),
   },
   inputIcon: {
     marginRight: 12,
@@ -275,7 +276,7 @@ const styles = StyleSheet.create({
     elevation: 5,
   },
   primaryButtonText: {
-    color: '#FFF',
+    color: tc('#FFF', 'fg'),
     fontSize: 18,
     fontWeight: 'bold',
   },
@@ -287,7 +288,7 @@ const styles = StyleSheet.create({
     marginBottom: 30,
   },
   footerText: {
-    color: '#666',
+    color: tc('#666', 'fg'),
     fontSize: 14,
   },
   footerLink: {

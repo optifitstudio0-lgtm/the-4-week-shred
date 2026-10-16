@@ -1,4 +1,5 @@
 import React, { useState, useCallback, useRef } from 'react';
+import { tc, statusStyle } from './theme';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Dimensions, ActivityIndicator, Animated, Easing } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { Ionicons } from '@expo/vector-icons';
@@ -15,7 +16,7 @@ import Certificate from './certificate';
 import { tr } from './i18n';
 
 const { width } = Dimensions.get('window');
-const MAIN_COLOR = '#2ECC71';
+const MAIN_COLOR = tc('#2ECC71', 'fg');
 const CERT_W = Math.min(width - 80, 300);
 
 const AchievementsScreen = ({ navigation, route }) => {
@@ -68,10 +69,10 @@ const AchievementsScreen = ({ navigation, route }) => {
 
   return (
     <View style={styles.container}>
-      <StatusBar style="light" />
+      <StatusBar style={statusStyle()} />
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()} style={styles.iconBtn}>
-          <Ionicons name={ICON.back} size={28} color="#FFF" />
+          <Ionicons name={ICON.back} size={28} color={tc("#FFF", 'fg')} />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>{tr('إنجازاتك')}</Text>
         <View style={styles.iconBtn} />
@@ -79,9 +80,9 @@ const AchievementsScreen = ({ navigation, route }) => {
 
       <ScrollView ref={scrollRef} contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
         {/* الستريك */}
-        <LinearGradient colors={['#3A1C05', '#140A02']} style={styles.streakHero}>
+        <LinearGradient colors={[tc('#3A1C05', 'bg'), tc('#140A02', 'bg')]} style={styles.streakHero}>
           <Animated.View style={{ transform: [{ scale: flame }] }}>
-            <Ionicons name="flame" size={70} color={s.streak > 0 ? '#FF7A00' : '#5A4A3A'} />
+            <Ionicons name="flame" size={70} color={s.streak > 0 ? tc('#FF7A00', 'fg') : tc('#5A4A3A', 'fg')} />
           </Animated.View>
           <Text style={styles.streakNum}>{s.streak}</Text>
           <Text style={styles.streakLabel}>{s.streak > 0 ? tr('{0} ستريك', daysLabel(s.streak)) : tr('ابدأ ستريك النهارده')}</Text>
@@ -116,9 +117,9 @@ const AchievementsScreen = ({ navigation, route }) => {
               <View key={b.id} style={[styles.badge, isEarned && { borderColor: b.color + '88' }]}>
                 {isFresh && <Text style={styles.newTag}>{tr('جديد')}</Text>}
                 <View style={[styles.badgeIcon, isEarned ? { backgroundColor: b.color } : styles.badgeIconLocked]}>
-                  <Ionicons name={isEarned ? b.icon : 'lock-closed'} size={26} color={isEarned ? '#000' : '#555'} />
+                  <Ionicons name={isEarned ? b.icon : 'lock-closed'} size={26} color={isEarned ? tc('#000', 'fg') : tc('#555', 'fg')} />
                 </View>
-                <Text style={[styles.badgeTitle, !isEarned && { color: '#888' }]} numberOfLines={2}>{b.title}</Text>
+                <Text style={[styles.badgeTitle, !isEarned && { color: tc('#888', 'fg') }]} numberOfLines={2}>{b.title}</Text>
                 <Text style={styles.badgeDesc} numberOfLines={2}>{b.desc}</Text>
                 {!isEarned && (
                   <View style={styles.badgeTrack}>
@@ -138,7 +139,7 @@ const AchievementsScreen = ({ navigation, route }) => {
 
             {unlocked ? (
               <TouchableOpacity style={styles.shareBtn} onPress={shareCertificate} disabled={busy}>
-                {busy ? <ActivityIndicator color="#000" /> : <Ionicons name="logo-instagram" size={22} color="#000" />}
+                {busy ? <ActivityIndicator color={tc("#000", 'fg')} /> : <Ionicons name="logo-instagram" size={22} color={tc("#000", 'fg')} />}
                 <Text style={styles.shareBtnText}>{tr('شيّرها ستوري على الإنستا')}</Text>
               </TouchableOpacity>
             ) : (
@@ -174,40 +175,40 @@ const AchievementsScreen = ({ navigation, route }) => {
 const BADGE_W = (width - 40 - 20) / 3;
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#000' },
-  header: { paddingTop: 30, paddingBottom: 20, paddingHorizontal: 20, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', backgroundColor: '#111', borderBottomWidth: 1, borderBottomColor: '#222' },
-  headerTitle: { flex: 1, textAlign: 'center', fontSize: 22, fontWeight: 'bold', color: '#FFF' },
+  container: { flex: 1, backgroundColor: tc('#000', 'bg') },
+  header: { paddingTop: 30, paddingBottom: 20, paddingHorizontal: 20, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', backgroundColor: tc('#111', 'bg'), borderBottomWidth: 1, borderBottomColor: tc('#222', 'border') },
+  headerTitle: { flex: 1, textAlign: 'center', fontSize: 22, fontWeight: 'bold', color: tc('#FFF', 'fg') },
   iconBtn: { width: 40, alignItems: 'center', justifyContent: 'center' },
   content: { padding: 20 },
 
-  streakHero: { borderRadius: 24, alignItems: 'center', paddingVertical: 24, paddingHorizontal: 16, borderWidth: 1, borderColor: '#4A2A0A' },
-  streakNum: { color: '#FFF', fontSize: 56, fontWeight: '900', marginTop: -4 },
-  streakLabel: { color: '#F5B041', fontSize: 16, fontWeight: 'bold' },
+  streakHero: { borderRadius: 24, alignItems: 'center', paddingVertical: 24, paddingHorizontal: 16, borderWidth: 1, borderColor: tc('#4A2A0A', 'border') },
+  streakNum: { color: tc('#FFF', 'fg'), fontSize: 56, fontWeight: '900', marginTop: -4 },
+  streakLabel: { color: tc('#F5B041', 'fg'), fontSize: 16, fontWeight: 'bold' },
   streakRow: { flexDirection: 'row', gap: 10, marginTop: 20, alignSelf: 'stretch' },
-  streakMini: { flex: 1, backgroundColor: 'rgba(255,255,255,0.06)', borderRadius: 14, paddingVertical: 12, alignItems: 'center' },
-  streakMiniVal: { color: '#FFF', fontSize: 18, fontWeight: 'bold' },
-  streakMiniLabel: { color: '#C8A27A', fontSize: 12, marginTop: 2 },
+  streakMini: { flex: 1, backgroundColor: tc('rgba(255,255,255,0.06)', 'bg'), borderRadius: 14, paddingVertical: 12, alignItems: 'center' },
+  streakMiniVal: { color: tc('#FFF', 'fg'), fontSize: 18, fontWeight: 'bold' },
+  streakMiniLabel: { color: tc('#C8A27A', 'fg'), fontSize: 12, marginTop: 2 },
 
-  sectionTitle: { color: '#FFF', fontSize: 20, fontWeight: 'bold', marginTop: 28, marginBottom: 14, textAlign: 'left' },
+  sectionTitle: { color: tc('#FFF', 'fg'), fontSize: 20, fontWeight: 'bold', marginTop: 28, marginBottom: 14, textAlign: 'left' },
   grid: { flexDirection: 'row', flexWrap: 'wrap', gap: 10 },
-  badge: { width: BADGE_W, backgroundColor: '#121212', borderRadius: 18, padding: 10, alignItems: 'center', borderWidth: 1, borderColor: '#222', minHeight: 150 },
-  newTag: { position: 'absolute', top: 6, right: 6, backgroundColor: '#E74C3C', color: '#FFF', fontSize: 10, fontWeight: 'bold', paddingHorizontal: 6, paddingVertical: 1, borderRadius: 6, overflow: 'hidden' },
+  badge: { width: BADGE_W, backgroundColor: tc('#121212', 'bg'), borderRadius: 18, padding: 10, alignItems: 'center', borderWidth: 1, borderColor: tc('#222', 'border'), minHeight: 150 },
+  newTag: { position: 'absolute', top: 6, right: 6, backgroundColor: tc('#E74C3C', 'bg'), color: tc('#FFF', 'fg'), fontSize: 10, fontWeight: 'bold', paddingHorizontal: 6, paddingVertical: 1, borderRadius: 6, overflow: 'hidden' },
   badgeIcon: { width: 54, height: 54, borderRadius: 27, justifyContent: 'center', alignItems: 'center', marginTop: 4 },
-  badgeIconLocked: { backgroundColor: '#1E1E1E', borderWidth: 1, borderColor: '#2E2E2E' },
-  badgeTitle: { color: '#FFF', fontSize: 14, fontWeight: 'bold', marginTop: 8, textAlign: 'center' },
-  badgeDesc: { color: '#777', fontSize: 11, marginTop: 3, textAlign: 'center', lineHeight: 15 },
-  badgeTrack: { alignSelf: 'stretch', height: 4, borderRadius: 2, backgroundColor: '#262626', marginTop: 8, overflow: 'hidden' },
+  badgeIconLocked: { backgroundColor: tc('#1E1E1E', 'bg'), borderWidth: 1, borderColor: tc('#2E2E2E', 'border') },
+  badgeTitle: { color: tc('#FFF', 'fg'), fontSize: 14, fontWeight: 'bold', marginTop: 8, textAlign: 'center' },
+  badgeDesc: { color: tc('#777', 'fg'), fontSize: 11, marginTop: 3, textAlign: 'center', lineHeight: 15 },
+  badgeTrack: { alignSelf: 'stretch', height: 4, borderRadius: 2, backgroundColor: tc('#262626', 'bg'), marginTop: 8, overflow: 'hidden' },
   badgeFill: { height: '100%', borderRadius: 2 },
 
-  certBox: { alignItems: 'center', backgroundColor: '#0D0D0D', borderRadius: 24, paddingVertical: 20, borderWidth: 1, borderColor: '#1E1E1E' },
+  certBox: { alignItems: 'center', backgroundColor: tc('#0D0D0D', 'bg'), borderRadius: 24, paddingVertical: 20, borderWidth: 1, borderColor: tc('#1E1E1E', 'border') },
   shareBtn: { marginTop: 18, height: 56, borderRadius: 28, backgroundColor: MAIN_COLOR, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 10, paddingHorizontal: 26 },
-  shareBtnText: { color: '#000', fontWeight: 'bold', fontSize: 16 },
+  shareBtnText: { color: tc('#000', 'fg'), fontWeight: 'bold', fontSize: 16 },
   lockedInfo: { marginTop: 18, alignItems: 'center', width: CERT_W },
-  lockedText: { color: '#BBB', fontSize: 15, fontWeight: '600' },
-  lockedTrack: { alignSelf: 'stretch', height: 8, backgroundColor: '#222', borderRadius: 4, marginTop: 10, overflow: 'hidden' },
+  lockedText: { color: tc('#BBB', 'fg'), fontSize: 15, fontWeight: '600' },
+  lockedTrack: { alignSelf: 'stretch', height: 8, backgroundColor: tc('#222', 'bg'), borderRadius: 4, marginTop: 10, overflow: 'hidden' },
   lockedFill: { height: '100%', backgroundColor: MAIN_COLOR, borderRadius: 4 },
   devBtn: { marginTop: 14, padding: 8 },
-  devText: { color: '#555', fontSize: 12, textDecorationLine: 'underline' },
+  devText: { color: tc('#555', 'fg'), fontSize: 12, textDecorationLine: 'underline' },
 });
 
 export default AchievementsScreen;

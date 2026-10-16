@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { tc, statusStyle } from './theme';
 import { View, Text, TouchableOpacity, SafeAreaView, KeyboardAvoidingView, Platform, ScrollView, Alert } from 'react-native';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { StatusBar } from 'expo-status-bar';
@@ -30,9 +31,9 @@ const LoginScreen = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      <StatusBar style="light" />
+      <StatusBar style={statusStyle()} />
       <LinearGradient
-        colors={['rgba(46, 204, 113, 0.4)', 'rgba(46, 204, 113, 0.1)', 'rgba(0, 0, 0, 0)']}
+        colors={[tc('rgba(46, 204, 113, 0.4)', 'bg'), tc('rgba(46, 204, 113, 0.1)', 'bg'), tc('rgba(0, 0, 0, 0)', 'bg')]}
         start={{ x: 1, y: 0 }}
         end={{ x: 0, y: 0.8 }}
         locations={[0, 0.4, 1]}
@@ -44,7 +45,7 @@ const LoginScreen = ({ navigation }) => {
           <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="handled">
             {navigation.canGoBack() && (
               <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
-                <Ionicons name={ICON.back} size={24} color="#FFF" />
+                <Ionicons name={ICON.back} size={24} color={tc("#FFF", 'fg')} />
               </TouchableOpacity>
             )}
 

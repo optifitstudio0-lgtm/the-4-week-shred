@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { tc, statusStyle } from './theme';
 import { View, Text, StyleSheet, Animated, Dimensions } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { Ionicons } from '@expo/vector-icons';
@@ -9,7 +10,7 @@ import { calculatePlan } from './nutrition';
 import { tr } from './i18n';
 
 const { width } = Dimensions.get('window');
-const MAIN_COLOR = '#2ECC71';
+const MAIN_COLOR = tc('#2ECC71', 'fg');
 
 const loadingTexts = [
   tr('بنقرا مقاسات جسمك...'),
@@ -117,10 +118,10 @@ const PlanGenerationScreen = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      <StatusBar style="light" />
+      <StatusBar style={statusStyle()} />
       <View style={styles.iconContainer}>
         <Ionicons name="settings-outline" size={80} color={MAIN_COLOR} style={{ opacity: 0.8 }} />
-        <Ionicons name="flash" size={40} color="#FFF" style={styles.centerIcon} />
+        <Ionicons name="flash" size={40} color={tc("#FFF", 'fg')} style={styles.centerIcon} />
       </View>
       <Text style={styles.title}>{tr('بنصمّم خطتك')}</Text>
       <Text style={styles.subtitle}>{loadingTexts[textIndex]}</Text>
@@ -133,14 +134,14 @@ const PlanGenerationScreen = ({ navigation }) => {
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#000000', justifyContent: 'center', alignItems: 'center', paddingHorizontal: 20 },
+  container: { flex: 1, backgroundColor: tc('#000000', 'bg'), justifyContent: 'center', alignItems: 'center', paddingHorizontal: 20 },
   iconContainer: { width: 120, height: 120, justifyContent: 'center', alignItems: 'center', marginBottom: 40, position: 'relative' },
   centerIcon: { position: 'absolute' },
-  title: { fontSize: 28, fontWeight: '800', color: '#fff', marginBottom: 15 },
-  subtitle: { fontSize: 16, color: '#888', marginBottom: 50, textAlign: 'center', height: 25 },
-  progressBarContainer: { width: width * 0.8, height: 10, backgroundColor: '#333', borderRadius: 10, overflow: 'hidden', marginBottom: 20 },
+  title: { fontSize: 28, fontWeight: '800', color: tc('#fff', 'fg'), marginBottom: 15 },
+  subtitle: { fontSize: 16, color: tc('#888', 'fg'), marginBottom: 50, textAlign: 'center', height: 25 },
+  progressBarContainer: { width: width * 0.8, height: 10, backgroundColor: tc('#333', 'bg'), borderRadius: 10, overflow: 'hidden', marginBottom: 20 },
   progressBarFill: { height: '100%', backgroundColor: MAIN_COLOR, borderRadius: 10, shadowColor: MAIN_COLOR, shadowOffset: { width: 0, height: 0 }, shadowOpacity: 1, shadowRadius: 10 },
-  percentage: { fontSize: 24, fontWeight: 'bold', color: MAIN_COLOR, textShadowColor: 'rgba(46, 204, 113, 0.5)', textShadowOffset: { width: 0, height: 0 }, textShadowRadius: 10 },
+  percentage: { fontSize: 24, fontWeight: 'bold', color: MAIN_COLOR, textShadowColor: tc('rgba(46, 204, 113, 0.5)', 'shadow'), textShadowOffset: { width: 0, height: 0 }, textShadowRadius: 10 },
 });
 
 export default PlanGenerationScreen;

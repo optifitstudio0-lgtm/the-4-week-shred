@@ -1,6 +1,7 @@
 // =========================================================
 // حساب السعرات والماكروز + تدوير الكارب
 // - calculatePlan: نفس معادلة شاشة إنشاء الخطة (Mifflin-St Jeor + النشاط + الهدف)
+// - البروتين: 1.6 لـ 2 جم لكل كيلو من الوزن المستهدف، وبحد أقصى 30% من السعرات
 // - recalcTargets: بيعيد الحساب كل ما الوزن أو الطول أو السن يتغيروا
 // - cycleMacros: كارب أعلى في أيام التمرين التقيل، وأقل في أيام الراحة
 //   ومتوسط الأسبوع بيفضل نفس السعرات المحسوبة بالظبط
@@ -14,21 +15,43 @@ const GOAL_DELTA = { lose_weight: -500, build_muscle: 300, keep_fit: 0 };
 // أقل سعرات آمنة من غير إشراف طبي
 const MIN_CAL = { male: 1500, female: 1200 };
 
-export const calculatePlan = ({ gender, age, weight, height, activity, goal }) => {
+// البروتين: جرامات لكل كيلو على حسب الهدف
+const PRO_PER_KG = { lose_weight: 2.0, build_muscle: 1.8, keep_fit: 1.6 };
+// أقصى نسبة بروتين من السعرات (أكتر من كده صعب توصله بأكل طبيعي)
+const MAX_PRO_SHARE = 0.3;
+
+// الوزن اللي البروتين بيتحسب عليه:
+// الوزن المستهدف لو موجود ومنطقي، غير كده الوزن الحالي بس مش أكتر من وزن BMI 25
+// (عشان اللي وزنه عالي ميطلعلوش رقم بروتين مستحيل)
+const proteinWeight = ({ weight, height, targetWeight }) => {
+  const t = parseFloat(targetWeight);
+  if (t >= 35 && t <= 250) return t;
+  const bmi25 = 25 * Math.pow(height / 100, 2);
+  return bmi25 > 0 ? Math.min(weight, bmi25) : weight;
+};
+
+export const proteinFor = (profile, calories) => {
+  const perKg = PRO_PER_KG[profile.goal] || PRO_PER_KG.lose_weight;
+  const byWeight = perKg * proteinWeight(profile);
+  const cap = (calories * MAX_PRO_SHARE) / 4;
+  return Math.round(Math.min(byWeight, cap));
+};
+
+export const calculatePlan = ({ gender, age, weight, height, activity, goal, targetWeight }) => {
   if (!weight || !height || !age) return null;
   const bmr = 10 * weight + 6.25 * height - 5 * age + (gender === 'male' ? 5 : -161);
   const tdee = bmr * (ACTIVITY[activity] || 1.2);
   const floor = MIN_CAL[gender] || MIN_CAL.female;
   const calories = Math.round(Math.max(tdee + (GOAL_DELTA[goal] || 0), floor));
-  const protein = Math.round(weight * 2.0);
+  const protein = proteinFor({ weight, height, goal, targetWeight }, calories);
   // المية: 35 مل لكل كيلو، بين 2 و4 لتر
   const water = Math.min(4000, Math.max(2000, Math.round((weight * 35) / 250) * 250));
   return { calories, protein, water };
 };
 
 const readProfile = async () => {
-  const [[, gender], [, age], [, weight], [, height], [, activity], [, goal]] = await AsyncStorage.multiGet([
-    'userGender', 'userAge', 'userWeight', 'userHeight', 'userActivity', 'userGoal',
+  const [[, gender], [, age], [, weight], [, height], [, activity], [, goal], [, targetWeight]] = await AsyncStorage.multiGet([
+    'userGender', 'userAge', 'userWeight', 'userHeight', 'userActivity', 'userGoal', 'targetWeight',
   ]);
   return {
     gender,
@@ -37,6 +60,7 @@ const readProfile = async () => {
     height: parseFloat(height),
     activity,
     goal,
+    targetWeight: parseFloat(targetWeight) || null,
   };
 };
 
@@ -52,6 +76,7 @@ export const recalcTargets = async () => {
     if (adjust) {
       const floor = MIN_CAL[profile.gender] || MIN_CAL.female;
       plan.calories = Math.max(floor, plan.calories + adjust);
+      plan.protein = proteinFor(profile, plan.calories); // السعرات قلت، فالحد الأقصى للبروتين يتظبط معاها
     }
     const before = parseInt(await AsyncStorage.getItem('calculatedCalories')) || null;
     await AsyncStorage.multiSet([

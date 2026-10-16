@@ -1,4 +1,5 @@
 import React, { useState, useCallback } from 'react';
+import { tc, statusStyle } from './theme';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { StatusBar } from 'expo-status-bar';
@@ -10,7 +11,7 @@ import { roundLabel } from './rounds';
 import { getIsPro, isDayPro, openPaywall, FREE_DAYS } from './pro';
 import { tr } from './i18n';
 
-const MAIN_COLOR = '#2ECC71';
+const MAIN_COLOR = tc('#2ECC71', 'fg');
 
 const WEEKS = [
   { id: 1, title: tr('الأسبوع 1'), subtitle: tr('مرحلة الإشعال') },
@@ -56,11 +57,11 @@ const ScheduleScreen = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      <StatusBar style="light" />
+      <StatusBar style={statusStyle()} />
       <View style={styles.header}>
         <View style={{ flexDirection: 'row', alignItems: 'center' }}>
           <Text style={styles.headerTitle}>{tr('خطتك')}</Text>
-          <Ionicons name="calendar" size={28} color="#FFC107" style={{ marginLeft: 10 }} />
+          <Ionicons name="calendar" size={28} color={tc("#FFC107", 'fg')} style={{ marginLeft: 10 }} />
         </View>
         <Text style={styles.headerSubtitle}>{round > 1 ? `${roundLabel(round)} • ` : tr('تحوّل في 4 أسابيع • ')}{tr('خلّصت ')}{doneCount}{tr(' من 28 يوم')}</Text>
         <View style={styles.overallTrack}>
@@ -78,13 +79,13 @@ const ScheduleScreen = ({ navigation }) => {
                 style={[styles.weekBtn, activeWeek === week.id && styles.activeWeekBtn, isLocked && styles.lockedWeekBtn]}
                 onPress={() => setActiveWeek(week.id)}
               >
-                <Text style={[styles.weekText, activeWeek === week.id && styles.activeWeekText, isLocked && { color: '#888' }]}>
+                <Text style={[styles.weekText, activeWeek === week.id && styles.activeWeekText, isLocked && { color: tc('#888', 'fg') }]}>
                   {week.title}
                 </Text>
                 {!isPro && (round > 1 || week.id > Math.ceil(FREE_DAYS / 7)) ? (
-                  <Ionicons name="star" size={12} color="#FFC107" style={{ marginLeft: 5 }} />
+                  <Ionicons name="star" size={12} color={tc("#FFC107", 'fg')} style={{ marginLeft: 5 }} />
                 ) : (
-                  isLocked && <Ionicons name="lock-closed" size={12} color="#666" style={{ marginLeft: 5 }} />
+                  isLocked && <Ionicons name="lock-closed" size={12} color={tc("#666", 'fg')} style={{ marginLeft: 5 }} />
                 )}
               </TouchableOpacity>
             );
@@ -95,7 +96,7 @@ const ScheduleScreen = ({ navigation }) => {
       <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
         <Text style={styles.sectionTitle}>
           {WEEKS[activeWeek - 1].title}: {WEEKS[activeWeek - 1].subtitle}
-          {isCurrentWeekLocked && <Text style={{ color: '#666', fontSize: 14 }}>{tr(' (مقفول 🔒)')}</Text>}
+          {isCurrentWeekLocked && <Text style={{ color: tc('#666', 'fg'), fontSize: 14 }}>{tr(' (مقفول 🔒)')}</Text>}
         </Text>
 
         {currentWeekDays.map((day) => {
@@ -116,21 +117,21 @@ const ScheduleScreen = ({ navigation }) => {
                 }
               }}
             >
-              <View style={[styles.dayIndicator, isDone && { backgroundColor: MAIN_COLOR }, isCurrentWeekLocked && { backgroundColor: '#333' }]}>
+              <View style={[styles.dayIndicator, isDone && { backgroundColor: MAIN_COLOR }, isCurrentWeekLocked && { backgroundColor: tc('#333', 'bg') }]}>
                 {isDone ? (
-                  <Ionicons name="checkmark" size={22} color="#000" />
+                  <Ionicons name="checkmark" size={22} color={tc("#000", 'fg')} />
                 ) : (
-                  <Text style={[styles.dayNumber, isCurrentWeekLocked && { color: '#666' }]}>{day.dayId}</Text>
+                  <Text style={[styles.dayNumber, isCurrentWeekLocked && { color: tc('#666', 'fg') }]}>{day.dayId}</Text>
                 )}
               </View>
 
               <View style={styles.cardInfo}>
-                <Text style={[styles.dayTitle, isCurrentWeekLocked && { color: '#888' }]}>{day.title}</Text>
+                <Text style={[styles.dayTitle, isCurrentWeekLocked && { color: tc('#888', 'fg') }]}>{day.title}</Text>
                 <View style={styles.metaRow}>
-                  <Ionicons name="time-outline" size={14} color="#666" />
+                  <Ionicons name="time-outline" size={14} color={tc("#666", 'fg')} />
                   <Text style={styles.metaText}> {day.duration}</Text>
                   <Text style={[styles.metaText, { marginHorizontal: 5 }]}>|</Text>
-                  <Ionicons name="barbell-outline" size={14} color="#666" />
+                  <Ionicons name="barbell-outline" size={14} color={tc("#666", 'fg')} />
                   <Text style={styles.metaText}> {day.level}</Text>
                   {isToday && <Text style={styles.todayTag}>{tr(' • النهارده')}</Text>}
                 </View>
@@ -138,9 +139,9 @@ const ScheduleScreen = ({ navigation }) => {
 
               <View style={styles.actionIcon}>
                 {isCurrentWeekLocked ? (
-                  <Ionicons name="lock-closed" size={24} color="#444" />
+                  <Ionicons name="lock-closed" size={24} color={tc("#444", 'fg')} />
                 ) : isDone ? (
-                  <Ionicons name="refresh-circle" size={32} color="#555" />
+                  <Ionicons name="refresh-circle" size={32} color={tc("#555", 'fg')} />
                 ) : (
                   <Ionicons name="play-circle" size={32} color={MAIN_COLOR} />
                 )}
@@ -155,31 +156,31 @@ const ScheduleScreen = ({ navigation }) => {
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#000000' },
+  container: { flex: 1, backgroundColor: tc('#000000', 'bg') },
   header: { paddingTop: 60, paddingHorizontal: 20, paddingBottom: 16 },
-  headerTitle: { fontSize: 28, fontWeight: 'bold', color: '#FFF' },
-  headerSubtitle: { fontSize: 14, color: '#888', marginTop: 5, textAlign: 'left' },
-  overallTrack: { height: 6, backgroundColor: '#222', borderRadius: 3, marginTop: 12, overflow: 'hidden' },
+  headerTitle: { fontSize: 28, fontWeight: 'bold', color: tc('#FFF', 'fg') },
+  headerSubtitle: { fontSize: 14, color: tc('#888', 'fg'), marginTop: 5, textAlign: 'left' },
+  overallTrack: { height: 6, backgroundColor: tc('#222', 'bg'), borderRadius: 3, marginTop: 12, overflow: 'hidden' },
   overallFill: { height: '100%', backgroundColor: MAIN_COLOR, borderRadius: 3 },
 
   weeksContainer: { height: 50, marginBottom: 10 },
-  weekBtn: { paddingHorizontal: 20, paddingVertical: 8, borderRadius: 20, backgroundColor: '#1A1A1A', marginRight: 10, flexDirection: 'row', alignItems: 'center', borderWidth: 1, borderColor: '#333' },
+  weekBtn: { paddingHorizontal: 20, paddingVertical: 8, borderRadius: 20, backgroundColor: tc('#1A1A1A', 'bg'), marginRight: 10, flexDirection: 'row', alignItems: 'center', borderWidth: 1, borderColor: tc('#333', 'border') },
   activeWeekBtn: { backgroundColor: MAIN_COLOR, borderColor: MAIN_COLOR },
-  lockedWeekBtn: { opacity: 0.6, borderColor: '#222' },
-  weekText: { color: '#888', fontWeight: 'bold' },
-  activeWeekText: { color: '#000' },
+  lockedWeekBtn: { opacity: 0.6, borderColor: tc('#222', 'border') },
+  weekText: { color: tc('#888', 'fg'), fontWeight: 'bold' },
+  activeWeekText: { color: tc('#000', 'fg') },
 
   scrollContent: { paddingHorizontal: 20 },
-  sectionTitle: { color: '#FFF', fontSize: 18, fontWeight: 'bold', marginBottom: 15, marginTop: 10, textAlign: 'left' },
-  dayCard: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#1A1A1A', padding: 15, borderRadius: 15, marginBottom: 12, borderWidth: 1, borderColor: '#333' },
+  sectionTitle: { color: tc('#FFF', 'fg'), fontSize: 18, fontWeight: 'bold', marginBottom: 15, marginTop: 10, textAlign: 'left' },
+  dayCard: { flexDirection: 'row', alignItems: 'center', backgroundColor: tc('#1A1A1A', 'bg'), padding: 15, borderRadius: 15, marginBottom: 12, borderWidth: 1, borderColor: tc('#333', 'border') },
   todayCard: { borderColor: MAIN_COLOR },
-  lockedCard: { backgroundColor: '#111', borderColor: '#222', opacity: 0.5 },
-  dayIndicator: { width: 40, height: 40, borderRadius: 20, backgroundColor: '#222', justifyContent: 'center', alignItems: 'center', marginRight: 15 },
-  dayNumber: { color: '#FFF', fontWeight: 'bold', fontSize: 16 },
+  lockedCard: { backgroundColor: tc('#111', 'bg'), borderColor: tc('#222', 'border'), opacity: 0.5 },
+  dayIndicator: { width: 40, height: 40, borderRadius: 20, backgroundColor: tc('#222', 'bg'), justifyContent: 'center', alignItems: 'center', marginRight: 15 },
+  dayNumber: { color: tc('#FFF', 'fg'), fontWeight: 'bold', fontSize: 16 },
   cardInfo: { flex: 1 },
-  dayTitle: { color: '#FFF', fontSize: 16, fontWeight: 'bold', marginBottom: 4, textAlign: 'left' },
+  dayTitle: { color: tc('#FFF', 'fg'), fontSize: 16, fontWeight: 'bold', marginBottom: 4, textAlign: 'left' },
   metaRow: { flexDirection: 'row', alignItems: 'center' },
-  metaText: { color: '#888', fontSize: 12 },
+  metaText: { color: tc('#888', 'fg'), fontSize: 12 },
   todayTag: { color: MAIN_COLOR, fontSize: 12, fontWeight: 'bold' },
   actionIcon: { paddingLeft: 10 },
 });

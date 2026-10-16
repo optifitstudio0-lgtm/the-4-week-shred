@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { tc, statusStyle } from './theme';
 import {
   View,
   Text,
@@ -23,9 +24,9 @@ if (
   UIManager.setLayoutAnimationEnabledExperimental(true);
 }
 
-const MAIN_COLOR = '#2ECC71'; // Green
-const BG_COLOR = '#000000';   // Black
-const CARD_COLOR = '#1A1A1A'; // Dark Grey
+const MAIN_COLOR = tc('#2ECC71', 'fg'); // Green
+const BG_COLOR = tc('#000000', 'bg');   // Black
+const CARD_COLOR = tc('#1A1A1A', 'bg'); // Dark Grey
 
 // ✅ 52 سؤال وإجابة بالعربي، ومطابقين للي التطبيق بيعمله فعلًا
 const FAQ_DATA = [
@@ -455,13 +456,13 @@ const HelpScreen = ({ navigation }) => {
   return (
     // ✅ Changed View to SafeAreaView to fix overlap issues on Notch phones
     <SafeAreaView style={styles.container}>
-      <StatusBar style="light" />
+      <StatusBar style={statusStyle()} />
       
       {/* --- Header --- */}
       <View style={styles.header}>
         {/* Back Button (Left) */}
         <TouchableOpacity onPress={() => navigation.goBack()} style={styles.iconBtn}>
-          <Ionicons name={require('./rtl').ICON.back} size={28} color="#FFF" />
+          <Ionicons name={require('./rtl').ICON.back} size={28} color={tc("#FFF", 'fg')} />
         </TouchableOpacity>
         
         {/* Title (Center) */}
@@ -478,11 +479,11 @@ const HelpScreen = ({ navigation }) => {
 
         {/* Search Bar */}
         <View style={styles.searchContainer}>
-          <Ionicons name="search" size={20} color="#666" style={styles.searchIcon} />
+          <Ionicons name="search" size={20} color={tc("#666", 'fg')} style={styles.searchIcon} />
           <TextInput
             style={styles.searchInput}
             placeholder={tr('دوّر على مشكلتك...')}
-            placeholderTextColor="#666"
+            placeholderTextColor={tc("#666", 'fg')}
             value={searchQuery}
             onChangeText={setSearchQuery}
             textAlign={LANG === 'en' ? 'left' : 'right'}
@@ -508,7 +509,7 @@ const HelpScreen = ({ navigation }) => {
                       <Ionicons 
                         name={isExpanded ? "chevron-up" : "chevron-down"} 
                         size={20} 
-                        color="#666" 
+                        color={tc("#666", 'fg')} 
                       />
                     </View>
                   </TouchableOpacity>
@@ -527,7 +528,7 @@ const HelpScreen = ({ navigation }) => {
         {/* Empty State */}
         {getFilteredData().length === 0 && (
           <View style={styles.emptyState}>
-            <Ionicons name="search-outline" size={50} color="#333" />
+            <Ionicons name="search-outline" size={50} color={tc("#333", 'fg')} />
             <Text style={styles.noResultText}>{tr('مفيش نتايج.')}</Text>
           </View>
         )}
@@ -559,7 +560,7 @@ const styles = StyleSheet.create({
   headerTitle: { 
     fontSize: 20, 
     fontWeight: 'bold', 
-    color: '#FFF',
+    color: tc('#FFF', 'fg'),
     textAlign: 'center',
   },
   iconBtn: { 
@@ -574,7 +575,7 @@ const styles = StyleSheet.create({
   },
   subHeader: {
     fontSize: 14,
-    color: '#BBB',
+    color: tc('#BBB', 'fg'),
     textAlign: 'center',
     marginBottom: 20,
     // ✅ Removed negative marginTop which was causing the issue
@@ -588,7 +589,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 15,
     marginBottom: 25,
     borderWidth: 1,
-    borderColor: '#333',
+    borderColor: tc('#333', 'border'),
     height: 50,
   },
   searchIcon: {
@@ -596,7 +597,7 @@ const styles = StyleSheet.create({
   },
   searchInput: {
     flex: 1,
-    color: '#fff',
+    color: tc('#fff', 'fg'),
     fontSize: 16,
     height: '100%',
   },
@@ -622,7 +623,7 @@ const styles = StyleSheet.create({
     backgroundColor: CARD_COLOR,
   },
   itemContainerActive: {
-    backgroundColor: '#252525', 
+    backgroundColor: tc('#252525', 'bg'), 
   },
   questionRow: {
     flexDirection: 'row',
@@ -631,21 +632,21 @@ const styles = StyleSheet.create({
   },
   questionText: {
     fontSize: 15,
-    color: '#FFF',
+    color: tc('#FFF', 'fg'),
     fontWeight: '600',
     flex: 1,
     textAlign: 'left', // في RTL الـleft بيتقلب لوحده لليمين (شوف rtl.js)
     marginRight: 10,
   },
   answerContainer: {
-    backgroundColor: '#222',
+    backgroundColor: tc('#222', 'bg'),
     padding: 15,
     borderTopWidth: 1,
-    borderTopColor: '#333',
+    borderTopColor: tc('#333', 'border'),
   },
   answerText: {
     fontSize: 14,
-    color: '#CCC',
+    color: tc('#CCC', 'fg'),
     lineHeight: 22,
     textAlign: 'left', // في RTL الـleft بيتقلب لوحده لليمين (شوف rtl.js)
   },
@@ -654,7 +655,7 @@ const styles = StyleSheet.create({
     marginTop: 50,
   },
   noResultText: {
-    color: '#666',
+    color: tc('#666', 'fg'),
     marginTop: 10,
     fontSize: 16,
   },

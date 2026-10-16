@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { tc, statusStyle } from './theme';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Modal, Animated, Alert, Linking } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { Ionicons } from '@expo/vector-icons';
@@ -9,7 +10,7 @@ import { formatTime, WEEKDAYS } from './dates';
 import { ICON, dirX, isRTL } from './rtl';
 import { tr } from './i18n';
 
-const MAIN_COLOR = '#2ECC71';
+const MAIN_COLOR = tc('#2ECC71', 'fg');
 
 // سويتش بنفس شكل الإعدادات (بيتحرك صح في RTL)
 const Switch = ({ value, onChange }) => {
@@ -18,7 +19,7 @@ const Switch = ({ value, onChange }) => {
     Animated.timing(anim, { toValue: value ? 1 : 0, duration: 200, useNativeDriver: false }).start();
   }, [value]);
   const translateX = anim.interpolate({ inputRange: [0, 1], outputRange: [dirX(2), dirX(22)] });
-  const backgroundColor = anim.interpolate({ inputRange: [0, 1], outputRange: ['#3A3A3C', MAIN_COLOR] });
+  const backgroundColor = anim.interpolate({ inputRange: [0, 1], outputRange: [tc('#3A3A3C', 'bg'), MAIN_COLOR] });
   return (
     <TouchableOpacity activeOpacity={1} onPress={() => onChange(!value)} style={{ width: 50, height: 30, justifyContent: 'center' }}>
       <Animated.View style={[styles.track, { backgroundColor }]}>
@@ -37,14 +38,14 @@ const TimeModal = ({ visible, value, title, onClose, onSave }) => {
   }, [visible]);
   const Stepper = ({ label, val, onUp, onDown }) => (
     <View style={styles.stepper}>
-      <TouchableOpacity style={styles.stepBtn} onPress={onUp}><Ionicons name="chevron-up" size={26} color="#FFF" /></TouchableOpacity>
+      <TouchableOpacity style={styles.stepBtn} onPress={onUp}><Ionicons name="chevron-up" size={26} color={tc("#FFF", 'fg')} /></TouchableOpacity>
       <Text style={styles.stepVal}>{String(val).padStart(2, '0')}</Text>
-      <TouchableOpacity style={styles.stepBtn} onPress={onDown}><Ionicons name="chevron-down" size={26} color="#FFF" /></TouchableOpacity>
+      <TouchableOpacity style={styles.stepBtn} onPress={onDown}><Ionicons name="chevron-down" size={26} color={tc("#FFF", 'fg')} /></TouchableOpacity>
       <Text style={styles.stepLabel}>{label}</Text>
     </View>
   );
   return (
-    <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose}>
+    <Modal visible={visible} transparent animationType="fade" onRequestClose={onClose} statusBarTranslucent navigationBarTranslucent>
       <View style={styles.backdrop}>
         <View style={styles.sheet}>
           <Text style={styles.sheetTitle}>{title}</Text>
@@ -65,7 +66,7 @@ const TimeModal = ({ visible, value, title, onClose, onSave }) => {
             <Text style={styles.saveText}>{tr('تمام')}</Text>
           </TouchableOpacity>
           <TouchableOpacity style={{ padding: 14, alignItems: 'center' }} onPress={onClose}>
-            <Text style={{ color: '#888' }}>{tr('إلغاء')}</Text>
+            <Text style={{ color: tc('#888', 'fg') }}>{tr('إلغاء')}</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -123,7 +124,7 @@ const RemindersScreen = ({ navigation }) => {
         <Ionicons name={icon} size={20} color={color} style={{ width: 28 }} />
         <Text style={styles.rowText}>{label}</Text>
         <Text style={styles.timeText}>{formatTime(t.hour, t.minute)}</Text>
-        <Ionicons name={ICON.chevronNext} size={18} color="#555" />
+        <Ionicons name={ICON.chevronNext} size={18} color={tc("#555", 'fg')} />
       </TouchableOpacity>
     );
   };
@@ -133,7 +134,7 @@ const RemindersScreen = ({ navigation }) => {
     return (
       <View style={[styles.card, !s.enabled && { opacity: 0.45 }]}>
         <View style={styles.cardHead}>
-          <View style={[styles.cardIcon, { backgroundColor: color }]}><Ionicons name={icon} size={20} color="#000" /></View>
+          <View style={[styles.cardIcon, { backgroundColor: color }]}><Ionicons name={icon} size={20} color={tc("#000", 'fg')} /></View>
           <View style={{ flex: 1 }}>
             <Text style={styles.cardTitle}>{title}</Text>
             <Text style={styles.cardSub}>{sub}</Text>
@@ -157,10 +158,10 @@ const RemindersScreen = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      <StatusBar style="light" />
+      <StatusBar style={statusStyle()} />
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()} style={styles.iconBtn}>
-          <Ionicons name={ICON.back} size={28} color="#FFF" />
+          <Ionicons name={ICON.back} size={28} color={tc("#FFF", 'fg')} />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>{tr('التذكيرات')}</Text>
         <View style={styles.iconBtn} />
@@ -168,7 +169,7 @@ const RemindersScreen = ({ navigation }) => {
 
       <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
         <View style={styles.master}>
-          <Ionicons name="notifications" size={26} color={s.enabled ? MAIN_COLOR : '#666'} />
+          <Ionicons name="notifications" size={26} color={s.enabled ? MAIN_COLOR : tc('#666', 'fg')} />
           <View style={{ flex: 1 }}>
             <Text style={styles.masterTitle}>{tr('كل التذكيرات')}</Text>
             <Text style={styles.masterSub}>{s.enabled ? tr('شغالة. هنفكّرك في المواعيد اللي تحت.') : tr('مقفولة. شغّلها عشان متنساش التحدي.')}</Text>
@@ -180,7 +181,7 @@ const RemindersScreen = ({ navigation }) => {
           <TimeRow icon="time-outline" label={tr('ميعاد التمرين')} path={['workout']} />
         </Section>
 
-        <Section icon="water" color="#3498DB" title={tr('المية')} sub={tr('كوباية كل كام ساعة طول اليوم')} path={['water']}>
+        <Section icon="water" color={tc("#3498DB", 'fg')} title={tr('المية')} sub={tr('كوباية كل كام ساعة طول اليوم')} path={['water']}>
           <Text style={styles.subLabel}>{tr('كل قد إيه؟')}</Text>
           <Chips
             options={[{ v: 1, l: tr('كل ساعة') }, { v: 2, l: tr('كل ساعتين') }, { v: 3, l: tr('كل 3 ساعات') }]}
@@ -201,25 +202,25 @@ const RemindersScreen = ({ navigation }) => {
           />
         </Section>
 
-        <Section icon="restaurant" color="#F39C12" title={tr('الوجبات')} sub={tr('تذكير بكل وجبة في خطة الأكل')} path={['meals']}>
-          <TimeRow icon="sunny-outline" label={tr('الفطار')} path={['meals', 'breakfast']} color="#F39C12" />
-          <TimeRow icon="restaurant-outline" label={tr('الغدا')} path={['meals', 'lunch']} color="#F39C12" />
-          <TimeRow icon="cafe-outline" label={tr('السناك')} path={['meals', 'snack']} color="#F39C12" />
-          <TimeRow icon="moon-outline" label={tr('العشا')} path={['meals', 'dinner']} color="#F39C12" />
+        <Section icon="restaurant" color={tc("#F39C12", 'fg')} title={tr('الوجبات')} sub={tr('تذكير بكل وجبة في خطة الأكل')} path={['meals']}>
+          <TimeRow icon="sunny-outline" label={tr('الفطار')} path={['meals', 'breakfast']} color={tc("#F39C12", 'fg')} />
+          <TimeRow icon="restaurant-outline" label={tr('الغدا')} path={['meals', 'lunch']} color={tc("#F39C12", 'fg')} />
+          <TimeRow icon="cafe-outline" label={tr('السناك')} path={['meals', 'snack']} color={tc("#F39C12", 'fg')} />
+          <TimeRow icon="moon-outline" label={tr('العشا')} path={['meals', 'dinner']} color={tc("#F39C12", 'fg')} />
         </Section>
 
-        <Section icon="camera" color="#FF6B81" title={tr('صورة ووزن الأسبوع')} sub={tr('مرة في الأسبوع تصوّر وتتوزن')} path={['weekly']}>
+        <Section icon="camera" color={tc("#FF6B81", 'fg')} title={tr('صورة ووزن الأسبوع')} sub={tr('مرة في الأسبوع تصوّر وتتوزن')} path={['weekly']}>
           <Text style={styles.subLabel}>{tr('اليوم')}</Text>
           <Chips
             options={[1, 2, 3, 4, 5, 6, 7].map((d) => ({ v: d, l: WEEKDAYS[d - 1] }))}
             value={s.weekly.weekday}
             onPick={(v) => setPath(['weekly', 'weekday'], v)}
           />
-          <TimeRow icon="time-outline" label={tr('الساعة')} path={['weekly']} color="#FF6B81" />
+          <TimeRow icon="time-outline" label={tr('الساعة')} path={['weekly']} color={tc("#FF6B81", 'fg')} />
         </Section>
 
-        <Section icon="flame" color="#FF7A00" title={tr('الستريك هيضيع')} sub={tr('لو لسه ما اتمرنتش لحد الميعاد ده')} path={['streak']}>
-          <TimeRow icon="time-outline" label={tr('ميعاد التنبيه')} path={['streak']} color="#FF7A00" />
+        <Section icon="flame" color={tc("#FF7A00", 'fg')} title={tr('الستريك هيضيع')} sub={tr('لو لسه ما اتمرنتش لحد الميعاد ده')} path={['streak']}>
+          <TimeRow icon="time-outline" label={tr('ميعاد التنبيه')} path={['streak']} color={tc("#FF7A00", 'fg')} />
         </Section>
 
         <TouchableOpacity style={styles.testBtn} onPress={test}>
@@ -249,49 +250,49 @@ const RemindersScreen = ({ navigation }) => {
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#000' },
-  header: { paddingTop: 30, paddingBottom: 20, paddingHorizontal: 20, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', backgroundColor: '#111', borderBottomWidth: 1, borderBottomColor: '#222' },
-  headerTitle: { flex: 1, textAlign: 'center', fontSize: 22, fontWeight: 'bold', color: '#FFF' },
+  container: { flex: 1, backgroundColor: tc('#000', 'bg') },
+  header: { paddingTop: 30, paddingBottom: 20, paddingHorizontal: 20, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', backgroundColor: tc('#111', 'bg'), borderBottomWidth: 1, borderBottomColor: tc('#222', 'border') },
+  headerTitle: { flex: 1, textAlign: 'center', fontSize: 22, fontWeight: 'bold', color: tc('#FFF', 'fg') },
   iconBtn: { width: 40, alignItems: 'center', justifyContent: 'center' },
   content: { padding: 20 },
 
-  master: { flexDirection: 'row', alignItems: 'center', gap: 14, backgroundColor: '#121F17', borderRadius: 20, padding: 16, borderWidth: 1, borderColor: '#1F4A2C', marginBottom: 16 },
-  masterTitle: { color: '#FFF', fontSize: 17, fontWeight: 'bold', textAlign: 'left' },
-  masterSub: { color: '#9DB8A5', fontSize: 13, marginTop: 2, textAlign: 'left' },
+  master: { flexDirection: 'row', alignItems: 'center', gap: 14, backgroundColor: tc('#121F17', 'bg'), borderRadius: 20, padding: 16, borderWidth: 1, borderColor: tc('#1F4A2C', 'border'), marginBottom: 16 },
+  masterTitle: { color: tc('#FFF', 'fg'), fontSize: 17, fontWeight: 'bold', textAlign: 'left' },
+  masterSub: { color: tc('#9DB8A5', 'fg'), fontSize: 13, marginTop: 2, textAlign: 'left' },
 
-  card: { backgroundColor: '#141414', borderRadius: 20, padding: 14, marginBottom: 12, borderWidth: 1, borderColor: '#222' },
+  card: { backgroundColor: tc('#141414', 'bg'), borderRadius: 20, padding: 14, marginBottom: 12, borderWidth: 1, borderColor: tc('#222', 'border') },
   cardHead: { flexDirection: 'row', alignItems: 'center', gap: 12 },
   cardIcon: { width: 38, height: 38, borderRadius: 12, justifyContent: 'center', alignItems: 'center' },
-  cardTitle: { color: '#FFF', fontSize: 16, fontWeight: 'bold', textAlign: 'left' },
-  cardSub: { color: '#888', fontSize: 12, marginTop: 2, textAlign: 'left' },
-  row: { flexDirection: 'row', alignItems: 'center', paddingVertical: 12, marginTop: 6, borderTopWidth: 1, borderTopColor: '#222', gap: 6 },
-  rowText: { color: '#DDD', fontSize: 15, flex: 1, textAlign: 'left' },
-  timeText: { color: '#FFF', fontWeight: 'bold', fontSize: 15 },
-  subLabel: { color: '#888', fontSize: 13, marginTop: 14, marginBottom: 8, textAlign: 'left' },
+  cardTitle: { color: tc('#FFF', 'fg'), fontSize: 16, fontWeight: 'bold', textAlign: 'left' },
+  cardSub: { color: tc('#888', 'fg'), fontSize: 12, marginTop: 2, textAlign: 'left' },
+  row: { flexDirection: 'row', alignItems: 'center', paddingVertical: 12, marginTop: 6, borderTopWidth: 1, borderTopColor: tc('#222', 'border'), gap: 6 },
+  rowText: { color: tc('#DDD', 'fg'), fontSize: 15, flex: 1, textAlign: 'left' },
+  timeText: { color: tc('#FFF', 'fg'), fontWeight: 'bold', fontSize: 15 },
+  subLabel: { color: tc('#888', 'fg'), fontSize: 13, marginTop: 14, marginBottom: 8, textAlign: 'left' },
   chips: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
-  chip: { paddingHorizontal: 12, paddingVertical: 7, borderRadius: 14, backgroundColor: '#1F1F1F', borderWidth: 1, borderColor: '#2E2E2E' },
+  chip: { paddingHorizontal: 12, paddingVertical: 7, borderRadius: 14, backgroundColor: tc('#1F1F1F', 'bg'), borderWidth: 1, borderColor: tc('#2E2E2E', 'border') },
   chipOn: { backgroundColor: MAIN_COLOR, borderColor: MAIN_COLOR },
-  chipText: { color: '#BBB', fontSize: 13, fontWeight: '600' },
-  chipTextOn: { color: '#000' },
+  chipText: { color: tc('#BBB', 'fg'), fontSize: 13, fontWeight: '600' },
+  chipTextOn: { color: tc('#000', 'fg') },
 
-  testBtn: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, marginTop: 10, paddingVertical: 14, borderRadius: 16, borderWidth: 1, borderColor: '#1F4A2C' },
+  testBtn: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 8, marginTop: 10, paddingVertical: 14, borderRadius: 16, borderWidth: 1, borderColor: tc('#1F4A2C', 'border') },
   testText: { color: MAIN_COLOR, fontWeight: 'bold', fontSize: 15 },
 
   track: { width: 50, height: 30, borderRadius: 15, justifyContent: 'center' },
-  knob: { width: 26, height: 26, borderRadius: 13, backgroundColor: '#FFF' },
+  knob: { width: 26, height: 26, borderRadius: 13, backgroundColor: tc('#FFF', 'bg') },
 
-  backdrop: { flex: 1, backgroundColor: 'rgba(0,0,0,0.75)', justifyContent: 'center', padding: 24 },
-  sheet: { backgroundColor: '#161616', borderRadius: 24, padding: 22, borderWidth: 1, borderColor: '#2A2A2A' },
-  sheetTitle: { color: '#FFF', fontSize: 18, fontWeight: 'bold', textAlign: 'center' },
+  backdrop: { flex: 1, backgroundColor: tc('rgba(0,0,0,0.75)', 'bg'), justifyContent: 'center', padding: 24 },
+  sheet: { backgroundColor: tc('#161616', 'bg'), borderRadius: 24, padding: 22, borderWidth: 1, borderColor: tc('#2A2A2A', 'border') },
+  sheetTitle: { color: tc('#FFF', 'fg'), fontSize: 18, fontWeight: 'bold', textAlign: 'center' },
   sheetPreview: { color: MAIN_COLOR, fontSize: 30, fontWeight: 'bold', textAlign: 'center', marginTop: 8 },
   steppersRow: { flexDirection: 'row', justifyContent: 'center', alignItems: 'center', gap: 16, marginVertical: 20 },
   stepper: { alignItems: 'center' },
-  stepBtn: { width: 56, height: 40, borderRadius: 12, backgroundColor: '#262626', justifyContent: 'center', alignItems: 'center' },
-  stepVal: { color: '#FFF', fontSize: 40, fontWeight: 'bold', marginVertical: 6 },
-  stepLabel: { color: '#888', fontSize: 12, marginTop: 4 },
-  colon: { color: '#FFF', fontSize: 40, fontWeight: 'bold', marginBottom: 20 },
+  stepBtn: { width: 56, height: 40, borderRadius: 12, backgroundColor: tc('#262626', 'bg'), justifyContent: 'center', alignItems: 'center' },
+  stepVal: { color: tc('#FFF', 'fg'), fontSize: 40, fontWeight: 'bold', marginVertical: 6 },
+  stepLabel: { color: tc('#888', 'fg'), fontSize: 12, marginTop: 4 },
+  colon: { color: tc('#FFF', 'fg'), fontSize: 40, fontWeight: 'bold', marginBottom: 20 },
   saveBtn: { backgroundColor: MAIN_COLOR, height: 52, borderRadius: 26, justifyContent: 'center', alignItems: 'center' },
-  saveText: { color: '#000', fontWeight: 'bold', fontSize: 17 },
+  saveText: { color: tc('#000', 'fg'), fontWeight: 'bold', fontSize: 17 },
 });
 
 export default RemindersScreen;

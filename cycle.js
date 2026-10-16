@@ -6,6 +6,7 @@
 // - كل البيانات على الموبايل بس. ده مش وسيلة لمنع الحمل ولا تشخيص طبي
 // =========================================================
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { tc } from './theme';
 import { dateKey, diffDays } from './dates';
 import { tr } from './i18n';
 
@@ -25,23 +26,23 @@ export const periodStartedToday = async () => saveCycleSettings({ enabled: true,
 
 export const PHASES = {
   menstrual: {
-    key: 'menstrual', label: tr('أيام الدورة'), icon: 'water', color: '#E74C3C',
+    key: 'menstrual', label: tr('أيام الدورة'), icon: 'water', color: tc('#E74C3C', 'fg'),
     hint: tr('التمرين النهارده أخف شوية وراحته أطول. ولو تعبانة، اعملي نسخة الـ7 دقايق عشان الستريك.'),
   },
   follicular: {
-    key: 'follicular', label: tr('المرحلة الذهبية'), icon: 'flash', color: '#2ECC71',
+    key: 'follicular', label: tr('المرحلة الذهبية'), icon: 'flash', color: tc('#2ECC71', 'fg'),
     hint: tr('طاقتك عالية وجسمك بيستحمل أكتر. أحسن وقت تكسري أرقامك.'),
   },
   ovulation: {
-    key: 'ovulation', label: tr('وقت التبويض'), icon: 'sunny', color: '#F1C40F',
+    key: 'ovulation', label: tr('وقت التبويض'), icon: 'sunny', color: tc('#F1C40F', 'fg'),
     hint: tr('أعلى طاقة في الشهر. سخّني كويس قبل التمرين عشان المفاصل بتبقى أرخى.'),
   },
   luteal: {
-    key: 'luteal', label: tr('بعد التبويض'), icon: 'moon', color: '#9B59B6',
+    key: 'luteal', label: tr('بعد التبويض'), icon: 'moon', color: tc('#9B59B6', 'fg'),
     hint: tr('جسمك بيحرق أكتر شوية، فزوّدنالك 100 سعر. عادي تحسي بجوع أكتر.'),
   },
   pms: {
-    key: 'pms', label: tr('قبل الدورة'), icon: 'cloudy-night', color: '#E67E22',
+    key: 'pms', label: tr('قبل الدورة'), icon: 'cloudy-night', color: tc('#E67E22', 'fg'),
     hint: tr('وزنك ممكن يزيد 1-2 كيلو مية، دي مش دهون وهتروح بعد الدورة. التمرين أخف شوية.'),
   },
 };

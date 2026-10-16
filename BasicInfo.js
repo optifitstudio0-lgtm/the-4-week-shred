@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
+import { tc, statusStyle } from './theme';
 import { View, Text, StyleSheet, TouchableOpacity, TextInput, KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { tr } from './i18n';
 import AsyncStorage from '@react-native-async-storage/async-storage'; // 👈 استيراد
 
-const MAIN_COLOR = '#2ECC71';
+const MAIN_COLOR = tc('#2ECC71', 'fg');
 
 const AgeWeightScreen = ({ navigation }) => {
   const [age, setAge] = useState('');
@@ -32,7 +33,7 @@ const AgeWeightScreen = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      <StatusBar style="light" />
+      <StatusBar style={statusStyle()} />
       <View style={styles.header}>
         <Text style={styles.title}>{tr('بياناتك الأساسية')}</Text>
         <Text style={styles.subtitle}>{tr('عشان نصمّم خطتك، محتاجين مقاسات جسمك.')}</Text>
@@ -47,7 +48,7 @@ const AgeWeightScreen = ({ navigation }) => {
             <TextInput 
               style={styles.input} 
               placeholder={tr('مثلًا 25')} 
-              placeholderTextColor="#555" 
+              placeholderTextColor={tc("#555", 'fg')} 
               keyboardType="number-pad" // استخدام number-pad أفضل للأرقام فقط
               maxLength={2} 
               value={age} 
@@ -61,7 +62,7 @@ const AgeWeightScreen = ({ navigation }) => {
             <TextInput 
               style={styles.input} 
               placeholder={tr('مثلًا 75')} 
-              placeholderTextColor="#555" 
+              placeholderTextColor={tc("#555", 'fg')} 
               keyboardType="number-pad" 
               maxLength={3} 
               value={weight} 
@@ -75,7 +76,7 @@ const AgeWeightScreen = ({ navigation }) => {
             <TextInput 
               style={styles.input} 
               placeholder={tr('مثلًا 175')} 
-              placeholderTextColor="#555" 
+              placeholderTextColor={tc("#555", 'fg')} 
               keyboardType="number-pad" 
               maxLength={3} 
               value={height} 
@@ -100,18 +101,18 @@ const AgeWeightScreen = ({ navigation }) => {
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#000000', paddingHorizontal: 20, paddingVertical: 50 },
+  container: { flex: 1, backgroundColor: tc('#000000', 'bg'), paddingHorizontal: 20, paddingVertical: 50 },
   header: { marginTop: 20, marginBottom: 30, alignItems: 'center' },
-  title: { fontSize: 28, fontWeight: '800', color: '#fff', marginBottom: 10 },
-  subtitle: { fontSize: 16, color: '#888', textAlign: 'center' },
+  title: { fontSize: 28, fontWeight: '800', color: tc('#fff', 'fg'), marginBottom: 10 },
+  subtitle: { fontSize: 16, color: tc('#888', 'fg'), textAlign: 'center' },
   formContainer: { gap: 20 },
   inputWrapper: { marginBottom: 15 },
   label: { color: MAIN_COLOR, fontSize: 16, fontWeight: '600', marginBottom: 10, marginLeft: 10, textAlign: 'left' },
-  input: { backgroundColor: '#1A1A1A', height: 60, borderRadius: 15, paddingHorizontal: 20, color: '#fff', fontSize: 18, borderWidth: 1, borderColor: '#333' },
+  input: { backgroundColor: tc('#1A1A1A', 'bg'), height: 60, borderRadius: 15, paddingHorizontal: 20, color: tc('#fff', 'fg'), fontSize: 18, borderWidth: 1, borderColor: tc('#333', 'border') },
   footer: { marginTop: 20, width: '100%', alignItems: 'center' },
   nextButton: { backgroundColor: MAIN_COLOR, width: '100%', height: 55, borderRadius: 30, justifyContent: 'center', alignItems: 'center', shadowColor: MAIN_COLOR, shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 10 },
-  disabledButton: { backgroundColor: '#333', shadowOpacity: 0 },
-  nextButtonText: { color: '#fff', fontSize: 18, fontWeight: 'bold' },
+  disabledButton: { backgroundColor: tc('#333', 'bg'), shadowOpacity: 0 },
+  nextButtonText: { color: tc('#fff', 'fg'), fontSize: 18, fontWeight: 'bold' },
 });
 
 export default AgeWeightScreen;

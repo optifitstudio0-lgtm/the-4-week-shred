@@ -1,4 +1,5 @@
 import React from 'react';
+import { tc, statusStyle } from './theme';
 import { 
   View, 
   Text, 
@@ -186,7 +187,7 @@ const TermsOfUse = ({ navigation, route }) => {
   return (
     // 2. استخدام SafeAreaView للحاوية الرئيسية لضمان تطابق الخلفية والحدود
     <SafeAreaView style={styles.rootContainer}>
-      <StatusBar style="light" />
+      <StatusBar style={statusStyle()} />
       
       {/* 3. الهيدر مطابق تماماً للكود الثاني (AboutScreen) */}
       <View style={styles.header}>
@@ -195,7 +196,7 @@ const TermsOfUse = ({ navigation, route }) => {
           onPress={() => navigation.goBack()} 
           style={styles.backButton}
         >
-          <Ionicons name={require('./rtl').ICON.back} size={28} color="#FFFFFF" />
+          <Ionicons name={require('./rtl').ICON.back} size={28} color={tc("#FFFFFF", 'fg')} />
         </TouchableOpacity>
         
         {/* العنوان */}
@@ -218,7 +219,7 @@ const styles = StyleSheet.create({
   // ستايل الحاوية الرئيسية (مثل rootContainer في الكود الثاني)
   rootContainer: { 
     flex: 1, 
-    backgroundColor: '#000000' 
+    backgroundColor: tc('#000000', 'bg') 
   },
 
   // ✅ ستايل الهيدر منسوخ من (AboutScreen customHeader)
@@ -230,7 +231,7 @@ const styles = StyleSheet.create({
     // هذه هي الحسبة الدقيقة التي تجعل الارتفاع مطابقاً للكود الثاني
     paddingTop: Platform.OS === 'android' ? 40 : 10, 
     paddingBottom: 10,
-    backgroundColor: '#000000',
+    backgroundColor: tc('#000000', 'bg'),
   },
 
   // ✅ ستايل زر الرجوع من الكود الثاني
@@ -244,7 +245,7 @@ const styles = StyleSheet.create({
   headerTitle: { 
     fontSize: 20, 
     fontWeight: 'bold', 
-    color: '#FFFFFF' 
+    color: tc('#FFFFFF', 'fg') 
   },
 
   content: { 
@@ -254,7 +255,7 @@ const styles = StyleSheet.create({
   },
   
   text: { 
-    color: '#BBBBBB', // استخدمنا textSecondary من الكود الثاني لتوحيد اللون
+    color: tc('#BBBBBB', 'fg'), // استخدمنا textSecondary من الكود الثاني لتوحيد اللون
     fontSize: 14, 
     lineHeight: 24, 
     textAlign: 'left', writingDirection: LANG === 'en' ? 'ltr' : 'rtl' // في RTL الـleft بيتقلب لليمين لوحده 

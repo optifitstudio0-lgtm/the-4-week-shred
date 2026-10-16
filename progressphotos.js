@@ -1,4 +1,5 @@
 import React, { useState, useCallback, useRef } from 'react';
+import { tc, statusStyle } from './theme';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Image, Alert, Dimensions, ActivityIndicator } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { Ionicons } from '@expo/vector-icons';
@@ -16,8 +17,8 @@ import { getIsPro, openPaywall } from './pro';
 import { tr } from './i18n';
 
 const { width } = Dimensions.get('window');
-const MAIN_COLOR = '#2ECC71';
-const PINK = '#FF6B81';
+const MAIN_COLOR = tc('#2ECC71', 'fg');
+const PINK = tc('#FF6B81', 'fg');
 const IMAGES = ImagePicker.MediaTypeOptions?.Images ?? ['images'];
 
 const ProgressPhotosScreen = ({ navigation }) => {
@@ -119,7 +120,7 @@ const ProgressPhotosScreen = ({ navigation }) => {
         <Image source={{ uri: photo.uri }} style={styles.slotImg} />
       ) : (
         <TouchableOpacity style={styles.slotEmpty} onPress={onEmpty}>
-          <Ionicons name="add-circle-outline" size={38} color="#666" />
+          <Ionicons name="add-circle-outline" size={38} color={tc("#666", 'fg')} />
           <Text style={styles.slotEmptyText}>{tr('صورة ')}{label}</Text>
         </TouchableOpacity>
       )}
@@ -137,10 +138,10 @@ const ProgressPhotosScreen = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      <StatusBar style="light" />
+      <StatusBar style={statusStyle()} />
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()} style={styles.iconBtn}>
-          <Ionicons name={ICON.back} size={28} color="#FFF" />
+          <Ionicons name={ICON.back} size={28} color={tc("#FFF", 'fg')} />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>{tr('قبل وبعد')}</Text>
         <TouchableOpacity onPress={addFlow} style={styles.iconBtn}>
@@ -162,7 +163,7 @@ const ProgressPhotosScreen = ({ navigation }) => {
           <View style={styles.shareBottom}>
             {kgDiff != null ? (
               <View style={styles.diffPill}>
-                <Ionicons name={kgDiff <= 0 ? 'trending-down' : 'trending-up'} size={18} color="#000" />
+                <Ionicons name={kgDiff <= 0 ? 'trending-down' : 'trending-up'} size={18} color={tc("#000", 'fg')} />
                 <Text style={styles.diffText}>{kgDiff > 0 ? '+' : ''}{kgDiff}{tr(' كجم')}</Text>
               </View>
             ) : null}
@@ -172,26 +173,26 @@ const ProgressPhotosScreen = ({ navigation }) => {
         </View>
 
         <TouchableOpacity style={[styles.shareBtn, (!before || !after) && { opacity: 0.5 }]} onPress={share} disabled={busy}>
-          {busy ? <ActivityIndicator color="#000" /> : <Ionicons name="logo-instagram" size={22} color="#000" />}
+          {busy ? <ActivityIndicator color={tc("#000", 'fg')} /> : <Ionicons name="logo-instagram" size={22} color={tc("#000", 'fg')} />}
           <Text style={styles.shareBtnText}>{tr('شيّر المقارنة')}</Text>
         </TouchableOpacity>
 
         <View style={styles.tips}>
-          <Ionicons name="bulb-outline" size={18} color="#F1C40F" />
+          <Ionicons name="bulb-outline" size={18} color={tc("#F1C40F", 'fg')} />
           <Text style={styles.tipsText}>{tr('نصيحة: صوّر الصبح، نفس الهدوم، نفس الزاوية. صورة كل أسبوع كفاية.')}</Text>
         </View>
 
         <View style={styles.galleryHeader}>
           <Text style={styles.sectionTitle}>{tr('كل الصور (')}{photos.length})</Text>
           <TouchableOpacity style={styles.addBtn} onPress={addFlow}>
-            <Ionicons name="add" size={18} color="#000" />
+            <Ionicons name="add" size={18} color={tc("#000", 'fg')} />
             <Text style={styles.addBtnText}>{tr('صورة جديدة')}</Text>
           </TouchableOpacity>
         </View>
 
         {photos.length === 0 ? (
           <TouchableOpacity style={styles.emptyGallery} onPress={addFlow}>
-            <Ionicons name="images-outline" size={44} color="#444" />
+            <Ionicons name="images-outline" size={44} color={tc("#444", 'fg')} />
             <Text style={styles.emptyTitle}>{tr('لسه مفيش صور')}</Text>
             <Text style={styles.emptyText}>{tr('صورة النهارده هي صورة "قبل" بتاعتك')}</Text>
           </TouchableOpacity>
@@ -227,21 +228,21 @@ const CARD_W = width - 40;
 const THUMB = (width - 40 - 20) / 3;
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#000' },
-  header: { paddingTop: 30, paddingBottom: 20, paddingHorizontal: 20, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', backgroundColor: '#111', borderBottomWidth: 1, borderBottomColor: '#222' },
-  headerTitle: { flex: 1, textAlign: 'center', fontSize: 22, fontWeight: 'bold', color: '#FFF' },
+  container: { flex: 1, backgroundColor: tc('#000', 'bg') },
+  header: { paddingTop: 30, paddingBottom: 20, paddingHorizontal: 20, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', backgroundColor: tc('#111', 'bg'), borderBottomWidth: 1, borderBottomColor: tc('#222', 'border') },
+  headerTitle: { flex: 1, textAlign: 'center', fontSize: 22, fontWeight: 'bold', color: tc('#FFF', 'fg') },
   iconBtn: { width: 40, alignItems: 'center', justifyContent: 'center' },
   content: { padding: 20 },
 
-  shareCard: { width: CARD_W, height: CARD_W * 1.25, backgroundColor: '#0A0A0A', borderRadius: 24, padding: 14, borderWidth: 1, borderColor: '#222', overflow: 'hidden' },
+  shareCard: { width: CARD_W, height: CARD_W * 1.25, backgroundColor: tc('#0A0A0A', 'bg'), borderRadius: 24, padding: 14, borderWidth: 1, borderColor: tc('#222', 'border'), overflow: 'hidden' },
   shareTop: { alignItems: 'center', marginBottom: 10 },
-  brand: { color: '#FFF', fontSize: 18, fontWeight: '900' },
-  brandSub: { color: '#888', fontSize: 13, marginTop: 2 },
+  brand: { color: tc('#FFF', 'fg'), fontSize: 18, fontWeight: '900' },
+  brandSub: { color: tc('#888', 'fg'), fontSize: 13, marginTop: 2 },
   slotsRow: { flex: 1, flexDirection: 'row', gap: 10 },
-  slot: { flex: 1, borderRadius: 16, overflow: 'hidden', backgroundColor: '#161616' },
+  slot: { flex: 1, borderRadius: 16, overflow: 'hidden', backgroundColor: tc('#161616', 'bg') },
   slotImg: { width: '100%', height: '100%' },
-  slotEmpty: { flex: 1, justifyContent: 'center', alignItems: 'center', borderWidth: 1.5, borderStyle: 'dashed', borderColor: '#333', borderRadius: 16 },
-  slotEmptyText: { color: '#777', marginTop: 6, fontWeight: '600' },
+  slotEmpty: { flex: 1, justifyContent: 'center', alignItems: 'center', borderWidth: 1.5, borderStyle: 'dashed', borderColor: tc('#333', 'border'), borderRadius: 16 },
+  slotEmptyText: { color: tc('#777', 'fg'), marginTop: 6, fontWeight: '600' },
   slotLabel: { position: 'absolute', top: 10, left: 10, backgroundColor: PINK, borderRadius: 12, paddingHorizontal: 12, paddingVertical: 4 },
   slotLabelText: { color: '#FFF', fontWeight: 'bold', fontSize: 14 },
   slotFooter: { position: 'absolute', bottom: 0, left: 0, right: 0, padding: 10, paddingTop: 30 },
@@ -249,24 +250,24 @@ const styles = StyleSheet.create({
   slotKg: { color: '#FFF', fontSize: 17, fontWeight: 'bold', textAlign: 'left' },
   shareBottom: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 10, marginTop: 12, flexWrap: 'wrap' },
   diffPill: { flexDirection: 'row', alignItems: 'center', gap: 4, backgroundColor: MAIN_COLOR, borderRadius: 14, paddingHorizontal: 12, paddingVertical: 5 },
-  diffText: { color: '#000', fontWeight: 'bold', fontSize: 15 },
-  daysText: { color: '#CCC', fontSize: 14, fontWeight: '600' },
-  hashtag: { color: '#666', fontSize: 13 },
+  diffText: { color: tc('#000', 'fg'), fontWeight: 'bold', fontSize: 15 },
+  daysText: { color: tc('#CCC', 'fg'), fontSize: 14, fontWeight: '600' },
+  hashtag: { color: tc('#666', 'fg'), fontSize: 13 },
 
   shareBtn: { marginTop: 16, height: 56, borderRadius: 28, backgroundColor: MAIN_COLOR, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 10 },
-  shareBtnText: { color: '#000', fontWeight: 'bold', fontSize: 17 },
-  tips: { flexDirection: 'row', alignItems: 'center', gap: 8, backgroundColor: 'rgba(241,196,15,0.08)', borderRadius: 14, padding: 12, marginTop: 16 },
-  tipsText: { color: '#CFC08A', fontSize: 13, flex: 1, textAlign: 'left', lineHeight: 19 },
+  shareBtnText: { color: tc('#000', 'fg'), fontWeight: 'bold', fontSize: 17 },
+  tips: { flexDirection: 'row', alignItems: 'center', gap: 8, backgroundColor: tc('rgba(241,196,15,0.08)', 'bg'), borderRadius: 14, padding: 12, marginTop: 16 },
+  tipsText: { color: tc('#CFC08A', 'fg'), fontSize: 13, flex: 1, textAlign: 'left', lineHeight: 19 },
 
   galleryHeader: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginTop: 26, marginBottom: 12 },
-  sectionTitle: { color: '#FFF', fontSize: 18, fontWeight: 'bold' },
+  sectionTitle: { color: tc('#FFF', 'fg'), fontSize: 18, fontWeight: 'bold' },
   addBtn: { flexDirection: 'row', alignItems: 'center', gap: 4, backgroundColor: MAIN_COLOR, borderRadius: 16, paddingHorizontal: 12, paddingVertical: 6 },
-  addBtnText: { color: '#000', fontWeight: 'bold', fontSize: 13 },
-  emptyGallery: { alignItems: 'center', padding: 30, backgroundColor: '#111', borderRadius: 20, borderWidth: 1, borderColor: '#222' },
-  emptyTitle: { color: '#FFF', fontSize: 17, fontWeight: 'bold', marginTop: 10 },
-  emptyText: { color: '#888', marginTop: 4 },
+  addBtnText: { color: tc('#000', 'fg'), fontWeight: 'bold', fontSize: 13 },
+  emptyGallery: { alignItems: 'center', padding: 30, backgroundColor: tc('#111', 'bg'), borderRadius: 20, borderWidth: 1, borderColor: tc('#222', 'border') },
+  emptyTitle: { color: tc('#FFF', 'fg'), fontSize: 17, fontWeight: 'bold', marginTop: 10 },
+  emptyText: { color: tc('#888', 'fg'), marginTop: 4 },
   grid: { flexDirection: 'row', flexWrap: 'wrap', gap: 10 },
-  thumb: { width: THUMB, height: THUMB * 1.33, borderRadius: 14, overflow: 'hidden', backgroundColor: '#161616' },
+  thumb: { width: THUMB, height: THUMB * 1.33, borderRadius: 14, overflow: 'hidden', backgroundColor: tc('#161616', 'bg') },
   thumbImg: { width: '100%', height: '100%' },
   thumbTag: { position: 'absolute', top: 6, left: 6, backgroundColor: PINK, borderRadius: 8, paddingHorizontal: 8, paddingVertical: 2 },
   thumbTagText: { color: '#FFF', fontSize: 12, fontWeight: 'bold' },

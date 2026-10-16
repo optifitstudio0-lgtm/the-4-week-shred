@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
+import { tc, isDark } from './theme';
 import { View, Text, TouchableOpacity, StyleSheet, AppState, Platform } from 'react-native';
-import { NavigationContainer, createNavigationContainerRef } from '@react-navigation/native';
+import { NavigationContainer, createNavigationContainerRef, DefaultTheme, DarkTheme } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Ionicons } from '@expo/vector-icons';
@@ -31,6 +32,7 @@ import GenderScreen from './Gender';
 import AgeWeightScreen from './BasicInfo';
 import ActivityLevelScreen from './activitylevel';
 import GoalScreen from './goal';
+import FitnessLevelScreen from './fitnesslevel';
 import PlanGenerationScreen from './plangeneration';
 
 import HomeScreen from './home';
@@ -60,9 +62,23 @@ const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 export const navigationRef = createNavigationContainerRef();
 
-const ACTIVE_COLOR = '#2ECC71';
-const BAR_BACKGROUND = '#111111';
-const INACTIVE_ICON_COLOR = '#666666';
+// ثيم التنقل: نفس خلفية التطبيق عشان مفيش وميض أبيض/أسود بين الشاشات
+const BASE_NAV_THEME = isDark() ? DarkTheme : DefaultTheme;
+const NAV_THEME = {
+  ...BASE_NAV_THEME,
+  colors: {
+    ...BASE_NAV_THEME.colors,
+    primary: '#2ECC71',
+    background: tc('#000', 'bg'),
+    card: tc('#111', 'bg'),
+    text: tc('#FFF', 'fg'),
+    border: tc('#222', 'border'),
+  },
+};
+
+const ACTIVE_COLOR = tc('#2ECC71', 'fg');
+const BAR_BACKGROUND = tc('#111111', 'bg');
+const INACTIVE_ICON_COLOR = tc('#666666', 'fg');
 
 const TABS = {
   HomeTab: { icon: 'home', label: tr('الرئيسية') },
@@ -94,7 +110,7 @@ function MyTabBar({ state, navigation }) {
               accessibilityRole="button"
               accessibilityLabel={tab.label}
             >
-              <Ionicons name={isFocused ? tab.icon : `${tab.icon}-outline`} size={22} color={isFocused ? '#000' : INACTIVE_ICON_COLOR} />
+              <Ionicons name={isFocused ? tab.icon : `${tab.icon}-outline`} size={22} color={isFocused ? tc('#000', 'fg') : INACTIVE_ICON_COLOR} />
               {isFocused && (
                 <Text style={styles.navTextFocused} numberOfLines={1} textBreakStrategy="simple">
                   {tab.label}{' '}
@@ -185,7 +201,7 @@ const App = () => {
   if (isShowSplash) return <SplashScreen />;
 
   return (
-    <NavigationContainer ref={navigationRef} direction={isRTL ? 'rtl' : 'ltr'}>
+    <NavigationContainer ref={navigationRef} theme={NAV_THEME} direction={isRTL ? 'rtl' : 'ltr'}>
       <Stack.Navigator
         initialRouteName={initialRoute}
         screenOptions={{ headerShown: false, animation: 'slide_from_right' }}
@@ -200,6 +216,7 @@ const App = () => {
         <Stack.Screen name="AgeWeight" component={AgeWeightScreen} />
         <Stack.Screen name="ActivityLevel" component={ActivityLevelScreen} />
         <Stack.Screen name="Goal" component={GoalScreen} />
+        <Stack.Screen name="FitnessLevel" component={FitnessLevelScreen} />
         <Stack.Screen name="PlanGeneration" component={PlanGenerationScreen} />
 
         <Stack.Screen name="MainTabs" component={MainTabs} />
@@ -236,8 +253,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     width: '100%',
     borderWidth: 1,
-    borderColor: '#333',
-    shadowColor: '#000',
+    borderColor: tc('#333', 'border'),
+    shadowColor: tc('#000', 'shadow'),
     shadowOffset: { width: 0, height: 5 },
     shadowOpacity: 0.5,
     shadowRadius: 10,
@@ -245,7 +262,7 @@ const styles = StyleSheet.create({
   },
   navItem: { alignItems: 'center', justifyContent: 'center', padding: 10, borderRadius: 25 },
   navItemFocused: { backgroundColor: ACTIVE_COLOR, flexDirection: 'row', paddingHorizontal: 15, paddingVertical: 10 },
-  navTextFocused: { color: '#000', fontWeight: 'bold', fontSize: 14, marginLeft: 8, flexShrink: 0, includeFontPadding: false, ...(Platform.OS === 'android' ? { fontFamily: 'sans-serif-medium', fontWeight: 'normal' } : null) },
+  navTextFocused: { color: tc('#000', 'fg'), fontWeight: 'bold', fontSize: 14, marginLeft: 8, flexShrink: 0, includeFontPadding: false, ...(Platform.OS === 'android' ? { fontFamily: 'sans-serif-medium', fontWeight: 'normal' } : null) },
 });
 
 export default App;
