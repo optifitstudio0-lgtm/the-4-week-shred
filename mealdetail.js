@@ -144,9 +144,22 @@ const MealDetailScreen = ({ route, navigation }) => {
           </View>
 
           <Text style={styles.sectionTitle}>{tr('طريقة التحضير')}</Text>
-          <Text style={styles.instructions}>
-            {meal.steps || tr('اخلط المكونات كويس وبالهنا والشفا!')}
-          </Text>
+          {Array.isArray(meal.steps) && meal.steps.length ? (
+            <View>
+              {meal.steps.map((st, i) => (
+                <View key={i} style={styles.stepRow}>
+                  <View style={styles.stepNum}>
+                    <Text style={styles.stepNumText}>{i + 1}</Text>
+                  </View>
+                  <Text style={styles.stepText}>{st}</Text>
+                </View>
+              ))}
+            </View>
+          ) : (
+            <Text style={styles.instructions}>
+              {meal.steps || tr('اخلط المكونات كويس وبالهنا والشفا!')}
+            </Text>
+          )}
         </View>
         <View style={{ height: 100 }} />
       </ScrollView>
@@ -223,10 +236,14 @@ const styles = StyleSheet.create({
   
   sectionTitle: { color: '#FFF', fontSize: 20, fontWeight: 'bold', marginBottom: 20 },
   ingredientsList: { marginBottom: 30 },
-  ingredientItem: { flexDirection: 'row', alignItems: 'center', marginBottom: 15 },
-  bullet: { width: 8, height: 8, borderRadius: 4, backgroundColor: MAIN_COLOR, marginRight: 15 },
-  ingredientText: { color: '#DDD', fontSize: 16 },
+  ingredientItem: { flexDirection: 'row', alignItems: 'flex-start', marginBottom: 15 },
+  bullet: { width: 8, height: 8, borderRadius: 4, backgroundColor: MAIN_COLOR, marginRight: 15, marginTop: 8 },
+  ingredientText: { flex: 1, color: '#DDD', fontSize: 16, lineHeight: 24, textAlign: 'left' },
   instructions: { color: '#BBB', fontSize: 16, lineHeight: 26 },
+  stepRow: { flexDirection: 'row', alignItems: 'flex-start', marginBottom: 16 },
+  stepNum: { width: 28, height: 28, borderRadius: 14, backgroundColor: MAIN_COLOR, justifyContent: 'center', alignItems: 'center', marginRight: 12, marginTop: 1 },
+  stepNumText: { color: '#000', fontWeight: 'bold', fontSize: 14 },
+  stepText: { flex: 1, color: '#DDD', fontSize: 16, lineHeight: 25, textAlign: 'left' },
   
   floatingFooter: { 
     position: 'absolute', 

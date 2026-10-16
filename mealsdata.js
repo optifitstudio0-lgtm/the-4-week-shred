@@ -1,5 +1,6 @@
 import { MEALS_AR } from './ar_meals';
 import { LANG } from './i18n';
+import { RECIPES } from './recipes';
 
 // =========================================================
 // قاعدة بيانات الوجبات + الصور (ملف واحد مشترك بين كل الشاشات)
@@ -514,6 +515,12 @@ MEAL_TYPES.forEach((type) => {
       meal.name = ar.name;
       meal.ingredients = ar.ingredients;
       meal.steps = ar.steps;
+    }
+    // الوصفة الكاملة (مقادير + خطوات) باللغة الحالية
+    const rec = RECIPES[meal.id]?.[LANG === 'ar' ? 'ar' : 'en'];
+    if (rec) {
+      meal.ingredients = rec.i;
+      meal.steps = rec.s;
     }
     meal.img = MEAL_IMAGES[meal.id] || null;
     meal.category = type;

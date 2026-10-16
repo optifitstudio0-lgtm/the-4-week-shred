@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
-import { View, Text, StyleSheet, ImageBackground, TouchableOpacity, ScrollView, Image, Alert, Animated, Easing, BackHandler } from 'react-native';
+import { View, Text, StyleSheet, ImageBackground, TouchableOpacity, ScrollView, Image, Alert, Animated, Easing, BackHandler, Modal, Pressable, PanResponder, useWindowDimensions } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { StatusBar } from 'expo-status-bar';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -24,13 +24,133 @@ const MAIN_COLOR = '#2ECC71';
 const REST_COLOR = '#3498DB';
 
 // ================= فيديو التمرين (لوب، من غير صوت) =================
-const ExerciseMedia = ({ exercise, paused, style, children }) => {
-  const [failed, setFailed] = useState(false);
-  const player = useVideoPlayer(exercise.video || null, (p) => {
+// - الفيديو بيتعرض كامل (contain) من غير قص، عشان التمرين يبان كله والجودة متبوظش من التكبير
+// - الأزرار فوق الفيديو مش عليه
+// - دوسة على الفيديو = شاشة كاملة بالعرض + تكبير بصباعين (دوستين = يرجع زي ما كان)
+const VIDEO_BG = '#FDFDFD'; // نفس خلفية الفيديوهات عشان الحواف متبانش
+
+const usePlayer = (source, paused) => {
+  const player = useVideoPlayer(source || null, (p) => {
     p.loop = true;
     p.muted = true;
     p.play();
   });
+  useEffect(() => {
+    if (!source) return;
+    paused ? player.pause() : player.play();
+  }, [paused]);
+  return player;
+};
+
+const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
+const dist = (t) => {
+  const [a, b] = t;
+  return Math.hypot(a.pageX - b.pageX, a.pageY - b.pageY);
+};
+
+const FullscreenVideo = ({ exercise, onClose }) => {
+  const { width: W, height: H } = useWindowDimensions();
+  const [landscape, setLandscape] = useState(true);
+  const player = usePlayer(exercise.video, false);
+
+  const scale = useRef(new Animated.Value(1)).current;
+  const tx = useRef(new Animated.Value(0)).current;
+  const ty = useRef(new Animated.Value(0)).current;
+  const g = useRef({ scale: 1, x: 0, y: 0, startDist: 0, startScale: 1, lastTap: 0 }).current;
+
+  const reset = () => {
+    g.scale = 1; g.x = 0; g.y = 0;
+    Animated.parallel([
+      Animated.spring(scale, { toValue: 1, useNativeDriver: true }),
+      Animated.spring(tx, { toValue: 0, useNativeDriver: true }),
+      Animated.spring(ty, { toValue: 0, useNativeDriver: true }),
+    ]).start();
+  };
+
+  const responder = useMemo(
+    () =>
+      PanResponder.create({
+        onStartShouldSetPanResponder: () => true,
+        onMoveShouldSetPanResponder: () => true,
+        onPanResponderGrant: (e) => {
+          const now = Date.now();
+          if (now - g.lastTap < 280) reset();
+          g.lastTap = now;
+          g.startDist = 0;
+        },
+        onPanResponderMove: (e, gs) => {
+          const t = e.nativeEvent.touches;
+          if (t.length >= 2) {
+            const d = dist(t);
+            if (!g.startDist) { g.startDist = d; g.startScale = g.scale; return; }
+            const next = clamp((g.startScale * d) / g.startDist, 1, 4);
+            scale.setValue(next);
+            g.liveScale = next;
+          } else if (g.scale > 1 && !g.startDist) {
+            // سحب بصباع واحد لما يكون متكبّر (اتجاه السحب بيتظبط لو الشاشة بالعرض)
+            const dx = landscape ? gs.dy : gs.dx;
+            const dy = landscape ? -gs.dx : gs.dy;
+            tx.setValue(g.x + dx / g.scale);
+            ty.setValue(g.y + dy / g.scale);
+          }
+        },
+        onPanResponderRelease: (e, gs) => {
+          if (g.startDist) {
+            g.scale = g.liveScale || g.scale;
+            if (g.scale <= 1.02) reset();
+          } else if (g.scale > 1) {
+            const dx = landscape ? gs.dy : gs.dx;
+            const dy = landscape ? -gs.dx : gs.dy;
+            g.x += dx / g.scale;
+            g.y += dy / g.scale;
+          }
+          g.startDist = 0;
+        },
+      }),
+    [landscape]
+  );
+
+  const boxW = landscape ? H : W;
+  const boxH = landscape ? W : H;
+  const frame = {
+    position: 'absolute',
+    width: boxW,
+    height: boxH,
+    left: (W - boxW) / 2,
+    top: (H - boxH) / 2,
+    transform: landscape ? [{ rotate: '90deg' }] : [],
+  };
+
+  return (
+    <Modal visible animationType="fade" onRequestClose={onClose} statusBarTranslucent supportedOrientations={['portrait', 'landscape']}>
+      <StatusBar hidden />
+      <View style={{ flex: 1, backgroundColor: VIDEO_BG }}>
+        <View style={[frame, { overflow: 'hidden' }]} {...responder.panHandlers}>
+          <Animated.View style={{ flex: 1, transform: [{ scale }, { translateX: tx }, { translateY: ty }] }} pointerEvents="none">
+            <VideoView player={player} style={StyleSheet.absoluteFill} contentFit="contain" nativeControls={false} />
+          </Animated.View>
+        </View>
+        <View style={styles.fsBar} pointerEvents="box-none">
+          <TouchableOpacity style={styles.roundIcon} onPress={onClose} accessibilityLabel={tr('قفل')}>
+            <Ionicons name="close" size={26} color="#FFF" />
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.roundIcon} onPress={() => { reset(); setLandscape((v) => !v); }}>
+            <Ionicons name="phone-landscape-outline" size={22} color="#FFF" />
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.roundIcon} onPress={reset}>
+            <Ionicons name="contract-outline" size={22} color="#FFF" />
+          </TouchableOpacity>
+        </View>
+        <Text style={styles.fsHint} pointerEvents="none">{tr('كبّر بصباعين، ودوستين عشان يرجع')}</Text>
+      </View>
+    </Modal>
+  );
+};
+
+const ExerciseMedia = ({ exercise, paused, style, children }) => {
+  const [failed, setFailed] = useState(false);
+  const [full, setFull] = useState(false);
+  const player = usePlayer(exercise.video, paused || full);
 
   useEffect(() => {
     if (!exercise.video) return;
@@ -41,11 +161,6 @@ const ExerciseMedia = ({ exercise, paused, style, children }) => {
     return () => sub.remove();
   }, [player]);
 
-  useEffect(() => {
-    if (!exercise.video) return;
-    paused ? player.pause() : player.play();
-  }, [paused]);
-
   if (!exercise.video || failed) {
     return (
       <ImageBackground source={exercise.image} style={style} imageStyle={{ opacity: 0.8 }}>
@@ -54,9 +169,15 @@ const ExerciseMedia = ({ exercise, paused, style, children }) => {
     );
   }
   return (
-    <View style={[style, { backgroundColor: '#000' }]}>
-      <VideoView player={player} style={StyleSheet.absoluteFill} contentFit="cover" nativeControls={false} />
+    <View style={[style, { backgroundColor: VIDEO_BG }]}>
       {children}
+      <Pressable style={styles.videoArea} onPress={() => setFull(true)}>
+        <VideoView player={player} style={StyleSheet.absoluteFill} contentFit="contain" nativeControls={false} />
+        <View style={styles.expandBtn} pointerEvents="none">
+          <Ionicons name="expand" size={20} color="#FFF" />
+        </View>
+      </Pressable>
+      {full && <FullscreenVideo exercise={exercise} onClose={() => setFull(false)} />}
     </View>
   );
 };
@@ -454,7 +575,6 @@ const WorkoutScreen = ({ route, navigation }) => {
       <View style={styles.activeContainer}>
         <StatusBar style="light" />
         <ExerciseMedia key={`${current.id}-${index}`} exercise={current} paused={paused} style={styles.activeImage}>
-          <LinearGradient colors={['transparent', '#000']} style={styles.imageGradient} pointerEvents="none" />
           <View style={styles.mediaTopRow}>
             <TouchableOpacity style={styles.roundIcon} onPress={toggleVoice}>
               <Ionicons name={voiceOn ? 'volume-high' : 'volume-mute'} size={22} color="#FFF" />
@@ -663,9 +783,13 @@ const styles = StyleSheet.create({
 
   // --- التمرين شغال ---
   activeContainer: { flex: 1, backgroundColor: '#000' },
-  activeImage: { width: '100%', height: '55%', justifyContent: 'flex-start', padding: 20 },
+  activeImage: { width: '100%', height: '55%', justifyContent: 'flex-start' },
   imageGradient: { ...StyleSheet.absoluteFillObject, opacity: 0.3 },
-  mediaTopRow: { marginTop: 40, flexDirection: 'row', justifyContent: 'space-between' },
+  mediaTopRow: { marginTop: 48, paddingHorizontal: 20, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', zIndex: 2 },
+  videoArea: { flex: 1, marginTop: 8, marginBottom: 44 },
+  expandBtn: { position: 'absolute', bottom: 8, right: 14, width: 36, height: 36, borderRadius: 18, backgroundColor: 'rgba(0,0,0,0.55)', justifyContent: 'center', alignItems: 'center' },
+  fsBar: { position: 'absolute', top: 44, left: 20, right: 20, flexDirection: 'row', justifyContent: 'space-between' },
+  fsHint: { position: 'absolute', bottom: 28, alignSelf: 'center', color: '#666', fontSize: 13, backgroundColor: 'rgba(255,255,255,0.85)', paddingHorizontal: 12, paddingVertical: 6, borderRadius: 12, overflow: 'hidden' },
   roundIcon: { backgroundColor: 'rgba(0,0,0,0.6)', borderRadius: 22, width: 44, height: 44, justifyContent: 'center', alignItems: 'center' },
   activeControls: { flex: 1, backgroundColor: '#111', borderTopLeftRadius: 35, borderTopRightRadius: 35, marginTop: -40, paddingHorizontal: 30, paddingVertical: 36, alignItems: 'center', justifyContent: 'space-between' },
   activeTitle: { fontSize: 28, fontWeight: 'bold', color: '#FFF', textAlign: 'center' },

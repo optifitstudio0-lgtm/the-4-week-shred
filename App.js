@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, AppState } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, AppState, Platform } from 'react-native';
 import { NavigationContainer, createNavigationContainerRef } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
@@ -95,7 +95,11 @@ function MyTabBar({ state, navigation }) {
               accessibilityLabel={tab.label}
             >
               <Ionicons name={isFocused ? tab.icon : `${tab.icon}-outline`} size={22} color={isFocused ? '#000' : INACTIVE_ICON_COLOR} />
-              {isFocused && <Text style={styles.navTextFocused}>{tab.label}</Text>}
+              {isFocused && (
+                <Text style={styles.navTextFocused} numberOfLines={1} textBreakStrategy="simple">
+                  {tab.label}{' '}
+                </Text>
+              )}
             </TouchableOpacity>
           );
         })}
@@ -241,7 +245,7 @@ const styles = StyleSheet.create({
   },
   navItem: { alignItems: 'center', justifyContent: 'center', padding: 10, borderRadius: 25 },
   navItemFocused: { backgroundColor: ACTIVE_COLOR, flexDirection: 'row', paddingHorizontal: 15, paddingVertical: 10 },
-  navTextFocused: { color: '#000', fontWeight: 'bold', fontSize: 14, marginLeft: 8 },
+  navTextFocused: { color: '#000', fontWeight: 'bold', fontSize: 14, marginLeft: 8, flexShrink: 0, includeFontPadding: false, ...(Platform.OS === 'android' ? { fontFamily: 'sans-serif-medium', fontWeight: 'normal' } : null) },
 });
 
 export default App;
