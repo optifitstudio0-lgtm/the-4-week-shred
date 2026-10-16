@@ -1,4 +1,4 @@
-import { EXERCISE_NAMES_AR, DAY_TITLES_AR, LEVELS_AR, durationAr } from './ar_exercises';
+import { EXERCISE_NAMES_AR, DAY_TITLES_AR, LEVELS_AR, LEVELS_EN, durationAr } from './ar_exercises';
 import { LANG } from './i18n';
 
 const AR_UI = LANG === 'ar';
@@ -1358,6 +1358,7 @@ Object.values(WORKOUT_PLAN).forEach((day) => {
     day.level = LEVELS_AR[day.level] || day.level;
   } else {
     day.subtitle = `Week ${week} • Day ${dayInWeek}`;
+    day.level = LEVELS_EN[day.level] || day.level;
   }
   day.isRest = day.exercises.length === 1 && day.exercises[0].id === 'rest';
   day.exercises.forEach((item) => {

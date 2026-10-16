@@ -668,7 +668,7 @@ const WorkoutScreen = ({ route, navigation }) => {
             </View>
             <Text style={styles.mainTitle}>{currentPlan.title}</Text>
             <Text style={styles.subTitle}>
-              {round > 1 ? `${roundLabel(round)} • ` : ''}{level !== DEFAULT_LEVEL ? `${levelInfo(level).label} • ` : ''}{currentPlan.level} • {exercisesList.length}{tr(' تمارين • ')}{mode === 'mini' ? tr('{0} دقيقة', estimateMinutes(exercisesList, restSec)) : currentPlan.duration}
+              {round > 1 ? `${roundLabel(round)} • ` : ''}{levelInfo(level).label} • {currentPlan.level} • {exercisesList.length}{tr(' تمارين • ')}{mode === 'mini' ? tr('{0} دقيقة', estimateMinutes(exercisesList, restSec)) : currentPlan.duration}
             </Text>
           </View>
 

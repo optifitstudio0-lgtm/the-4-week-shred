@@ -131,15 +131,27 @@ export const DAY_TITLES_AR = {
   'Finish Line': 'خط النهاية',
 };
 
+// شدة اليوم (مش مستوى المستخدم): كلمات مختلفة عن مبتدئ/متوسط/متقدم عشان ميحصلش لخبطة
 export const LEVELS_AR = {
-  Beginner: 'مبتدئ',
-  Easy: 'سهل',
-  Intermediate: 'متوسط',
-  Hard: 'صعب',
-  Expert: 'محترف',
-  CHAMPION: 'بطل',
+  Beginner: 'شدة خفيفة',
+  Easy: 'استشفاء',
+  Intermediate: 'شدة متوسطة',
+  Hard: 'شدة عالية',
+  Expert: 'شدة قصوى',
+  CHAMPION: 'التحدي النهائي',
   Completed: 'مكتمل',
   '-': 'راحة',
+};
+
+export const LEVELS_EN = {
+  Beginner: 'Light intensity',
+  Easy: 'Recovery',
+  Intermediate: 'Moderate intensity',
+  Hard: 'High intensity',
+  Expert: 'Max intensity',
+  CHAMPION: 'Final test',
+  Completed: 'Completed',
+  '-': 'Rest',
 };
 
 // "30s" -> "30 ث" ، "12 reps" -> "12 عدة" ، "24 Mins" -> "24 دقيقة"

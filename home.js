@@ -8,8 +8,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useFocusEffect } from '@react-navigation/native';
 
 import { WORKOUT_PLAN, EXERCISE_LIBRARY } from './exercisesdata';
-import { getCurrentDay, getStreak, getCompletedDays, TOTAL_DAYS, getRound, startNextRound } from './progressstore';
-import { roundLabel, roundHint } from './rounds';
+import { getCurrentDay, getStreak, getCompletedDays, TOTAL_DAYS, getRound, startNextRound, getWorkoutPrefs } from './progressstore';
+import { roundLabel, roundHint, levelInfo, DEFAULT_LEVEL } from './rounds';
 import { getTargets } from './mealstore';
 import { getReminders, enableReminders, refreshStreakSaver } from './notifications';
 import { dateKey, formatToday } from './dates';
@@ -26,6 +26,7 @@ const HomeScreen = ({ navigation }) => {
   const [waterGoal, setWaterGoal] = useState(3000);
   const [calories, setCalories] = useState(2000);
   const [protein, setProtein] = useState(150);
+  const [userLevel, setUserLevel] = useState(DEFAULT_LEVEL); // مستوى التمرين اللي المستخدم اختاره
   const [currentDay, setCurrentDay] = useState(1);
   const [todaysWorkout, setTodaysWorkout] = useState(null);
   const [userImage, setUserImage] = useState(null);
@@ -57,6 +58,7 @@ const HomeScreen = ({ navigation }) => {
       setDoneDays(Object.keys(await getCompletedDays()).length);
       setIsPro(await getIsPro());
       setRound(await getRound());
+      setUserLevel((await getWorkoutPrefs()).level);
 
       const st = await getStreak();
       setStreak(st);
@@ -285,7 +287,7 @@ const HomeScreen = ({ navigation }) => {
                 <View style={styles.workoutInfo}>
                   <View style={styles.tagRow}>
                     <View style={styles.tag}>
-                      <Text style={styles.tagText}>{todaysWorkout.level}</Text>
+                      <Text style={styles.tagText}>{levelInfo(userLevel).label}</Text>
                     </View>
                     {round > 1 && (
                       <View style={styles.roundTag}>
