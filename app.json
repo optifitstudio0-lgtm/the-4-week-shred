@@ -1,0 +1,19 @@
+{
+  "expo": {
+    "name": "The 4-Week SHRED",
+    "slug": "the-4-week-shred",
+    "version": "1.8.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "splash": { "image": "./assets/splash.png", "resizeMode": "contain", "backgroundColor": "#000000" },
+    "ios": { "bundleIdentifier": "com.yourname.shred", "usesAppleSignIn": true, "supportsTablet": false },
+    "android": { "package": "com.yourname.shred", "allowBackup": true },
+    "plugins": [
+      "expo-notifications",
+      "expo-updates",
+      "expo-apple-authentication",
+      "expo-localization",
+      ["expo-tracking-transparency", { "userTrackingPermission": "بنستخدم الإذن ده عشان نعرضلك إعلانات مناسبة ليك. اشتراك برو بيشيل الإعلانات خالص." }]
+    ]
+  }
+}

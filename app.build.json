@@ -1,0 +1,22 @@
+{
+  "expo": {
+    "name": "The 4-Week SHRED",
+    "slug": "the-4-week-shred",
+    "version": "1.8.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "splash": { "image": "./assets/splash.png", "resizeMode": "contain", "backgroundColor": "#000000" },
+    "ios": { "bundleIdentifier": "com.yourname.shred", "usesAppleSignIn": true, "supportsTablet": false },
+    "android": { "package": "com.yourname.shred", "allowBackup": true },
+    "plugins": [
+      "expo-notifications",
+      "expo-updates",
+      "expo-apple-authentication",
+      "expo-localization",
+      ["@react-native-google-signin/google-signin", { "iosUrlScheme": "com.googleusercontent.apps.PASTE_IOS_CLIENT_ID" }],
+      ["react-native-fbsdk-next", { "appID": "PASTE_FB_APP_ID", "clientToken": "PASTE_FB_CLIENT_TOKEN", "displayName": "The 4-Week SHRED", "scheme": "fbPASTE_FB_APP_ID" }],
+      ["react-native-google-mobile-ads", { "androidAppId": "ca-app-pub-3940256099942544~3347511713", "iosAppId": "ca-app-pub-3940256099942544~1458002511" }],
+      ["expo-tracking-transparency", { "userTrackingPermission": "بنستخدم الإذن ده عشان نعرضلك إعلانات مناسبة ليك. اشتراك برو بيشيل الإعلانات خالص." }]
+    ]
+  }
+}
